@@ -4,8 +4,35 @@
 
 Inspired by [the Cambria Project](https://github.com/inkandswitch/cambria-project), Devonian drops the DSL approach and adds a focus on mapping between not just differences in schema, but also differences in primary key assignment between two Systems of Record.
 
-## Usage
+## How it works
+The core is in DevonianLens which is very simple: it links two database tables, and calls a 'left to right' translation function when a change happens on the left, then add the result on the right. So far only additions have been implemented; updates and deletions coming soon:
+```
+export class DevonianLens<LeftModel, RightModel> {
+  left: DevonianTable<LeftModel>;
+  right: DevonianTable<RightModel>;
+  constructor(left: DevonianTable<LeftModel>, right: DevonianTable<RightModel>, leftToRight: (input: LeftModel) => RightModel, rightToLeft: (input: RightModel) => LeftModel) {
+    this.left = left;
+    this.right = right;
+    left.on('add-from-client', (added: LeftModel) => {
+      // console.log('lens forwards addition event from left to right');
+      right.addFromLens(leftToRight(added));
+    });
+    right.on('add-from-client', (added: RightModel) => {
+      // console.log('lens forwards addition event from right to left');
+      left.addFromLens(rightToLeft(added));
+    });
+  }
+}
+```
 
+The `DevonianIndex` class keeps track of different identifiers an object may have on different platforms, and generates a `ForeignIds` object for each platform. If a platform API offers a place for storing custom metadata, the `ForeignIds` object can be stored there.
+
+## Link with Automerge
+We'll also be adding a way to combine Devonian with [Automerge](https://automerge.org) so that conflicting changes can be handled more gracefully.
+In a [previous version](https://github.com/tubsproject/reflector/blob/e01470d/README.md), the translation would happen in two steps (left -> middle -> right) and the middle format was stored on Automerge. We have to work out where to put Automerge back in, now that that middle representation is gone.
+
+## Usage
+See the [example Solid-Slack bridge](https://github.com/tubsproject/devonian/blob/main/examples/DevonianSolidSlackBridge.ts).
 
 ## Contributing
 Please [create an issue](https://github.com/tubsproject/devonian/issues/new) with any feedback you might have.
