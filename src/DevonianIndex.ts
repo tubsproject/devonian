@@ -2,6 +2,10 @@ export type ForeignIds = {
   [platform: string]: string;
 };
 
+export type Equivalences = {
+  [model: string]: ForeignIds[];
+};
+
 export class DevonianIndex {
   ids: {
     [model: string]: {
@@ -38,21 +42,58 @@ export class DevonianIndex {
     return undefined;
   }
 
+  ensureIndexed(model: string, i: number){
+    if (typeof this.index[model] === 'undefined') {
+      this.index[model] = {};
+    }
+    Object.keys(this.ids[model][i]).forEach((platform: string) => {
+      if (typeof this.index[model][platform] === 'undefined') {
+        this.index[model][platform] = {};
+      }
+      this.index[model][platform][this.ids[model][i][platform]] = i;
+    });
+  }
+
   storeIdentitiesFrom(
     model: string,
     platform: string,
     localId: string,
     foreignIds: { [platform: string]: string },
   ): void {
-    const i = this.lookupIndexFrom(model, platform, localId, foreignIds);
+    let i = this.lookupIndexFrom(model, platform, localId, foreignIds);
+    // console.log('storing', model, platform, localId, foreignIds, i);
     if (typeof i === 'number') {
       this.ids[model][i][platform] = localId;
-      this.index[model]![platform]![localId] = i;
       Object.keys(foreignIds).forEach((otherPlatform) => {
         this.ids[model][i][otherPlatform] = foreignIds[otherPlatform];
         this.index[model]![otherPlatform]![foreignIds[otherPlatform]] = i;
       });
+    } else {
+      const toStore = JSON.parse(JSON.stringify(foreignIds));
+      toStore[platform] = localId;
+      if (typeof this.ids[model] === 'undefined') {
+        this.ids[model] = [];
+      }
+      this.ids[model].push(toStore);
+      i = this.ids[model].length - 1;
     }
+    this.ensureIndexed(model, i);
+  }
+  storeEquivalences(equivalences: Equivalences) {
+    Object.keys(equivalences).forEach((model: string) => {
+      // console.log('storeEquivalences', model);
+      equivalences[model].forEach((thing: ForeignIds) => {
+        // console.log('storeEquivalences', model, thing);
+        Object.keys(thing).forEach((platform: string) => {
+          const filtered = JSON.parse(JSON.stringify(thing));
+          delete filtered[platform];
+          // console.log('storeEquivalences', model, thing, platform, filtered);
+          if (Object.keys(filtered).length > 0) {
+            this.storeIdentitiesFrom(model, platform, thing[platform], filtered);
+          }
+        });
+      });
+    });
   }
 
   convert(
@@ -63,7 +104,7 @@ export class DevonianIndex {
   ): string | undefined {
     const i: number | undefined =
       this.index[model]?.[fromPlatform]?.[fromLocalId];
-    if (i) {
+    if (typeof i === 'number') {
       return this.ids[model][i][toPlatform];
     }
     return undefined;
