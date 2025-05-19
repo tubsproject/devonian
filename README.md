@@ -6,7 +6,7 @@ Inspired by [the Cambria Project](https://github.com/inkandswitch/cambria-projec
 
 ## How it works
 The core is in DevonianLens which is very simple: it links two database tables, and calls a 'left to right' translation function when a change happens on the left, then add the result on the right. So far only additions have been implemented; updates and deletions coming soon:
-```
+```ts
 export class DevonianLens<LeftModel, RightModel> {
   left: DevonianTable<LeftModel>;
   right: DevonianTable<RightModel>;
