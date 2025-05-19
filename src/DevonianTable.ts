@@ -12,7 +12,7 @@ export class DevonianTable<Model> extends EventEmitter {
       this.emit('add-from-client', obj);
     });
   }
-  addFromLens(obj: Model) {
+  addFromLens(obj: Model): void {
     this.rows.push(obj);
     this.client.add(obj);
   }
