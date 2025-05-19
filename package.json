@@ -9,6 +9,10 @@
   "exports": {
     ".": "./build/src/main.js"
   },
+  "files": [
+    "docs",
+    "build"
+  ],
   "devDependencies": {
     "@eslint/js": "~9.17",
     "@types/eslint__js": "~8.42",
