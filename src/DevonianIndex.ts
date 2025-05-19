@@ -29,7 +29,7 @@ export class DevonianIndex {
     return undefined;
   }
   
-  storeIdentitiesFrom(model: string, platform: string, localId: string, foreignIds: { [platform: string]: string}) {
+  storeIdentitiesFrom(model: string, platform: string, localId: string, foreignIds: { [platform: string]: string}): void {
     const i = this.lookupIndexFrom(model, platform, localId, foreignIds);
     if (typeof i === 'number') {
       this.ids[model][i][platform] = localId;
@@ -48,7 +48,7 @@ export class DevonianIndex {
     }
     return undefined;
   }
-  convertForeignIds(fromPlatform: string, fromId: string, fromForeignIds: ForeignIds, toPlatform: string) {
+  convertForeignIds(fromPlatform: string, fromId: string, fromForeignIds: ForeignIds, toPlatform: string): ForeignIds {
     const copied = JSON.parse(JSON.stringify(fromForeignIds));
     delete copied[toPlatform];
     copied[fromPlatform] = fromId;

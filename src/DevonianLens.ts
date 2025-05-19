@@ -3,7 +3,7 @@ import { DevonianTable } from './DevonianTable.js';
 export class DevonianLens<LeftModel, RightModel> {
   left: DevonianTable<LeftModel>;
   right: DevonianTable<RightModel>;
-  constructor(left: DevonianTable<any>, right: DevonianTable<any>, leftToRight: (input: LeftModel) => RightModel, rightToLeft: (input: RightModel) => LeftModel) {
+  constructor(left: DevonianTable<LeftModel>, right: DevonianTable<RightModel>, leftToRight: (input: LeftModel) => RightModel, rightToLeft: (input: RightModel) => LeftModel) {
     this.left = left;
     this.right = right;
     left.on('add-from-client', (added: LeftModel) => {

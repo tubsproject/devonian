@@ -1,19 +1,19 @@
 import { EventEmitter } from 'node:events';
 import { describe, it, expect } from 'vitest';
 import { DevonianIndex } from '../../src/DevonianIndex.js';
-import { SolidMessage } from '../../src/DevonianSolid.js';
+import { SolidMessage } from '../../examples/DevonianSolid.js';
 import { SlackMessage } from '../../examples/DevonianSlack.js';
 import { DevonianSolidSlackBridge } from '../../examples/DevonianSolidSlackBridge.js';
 
 class MockClient<Model> extends EventEmitter {
   added: Model[] = [];
   counter: number = 0;
-  async add(obj: Model) {
+  async add(obj: Model): Promise<string> {
     // console.log('adding in mock client', obj);
     this.added.push(obj);
     return (this.counter++).toString();
   }
-  fakeIncoming(obj: Model) {
+  fakeIncoming(obj: Model): void {
     // console.log('fake incoming in mock client', obj);
     this.emit('incoming', obj);
   }

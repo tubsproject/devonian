@@ -1,4 +1,4 @@
-import { DevonianClient } from '../src/DevonianLens.js';
+import { DevonianClient } from '../src/DevonianClient.js';
 import { DevonianIndex, ForeignIds } from '../src/DevonianIndex.js';
 
 export type SlackMessage = {
@@ -21,7 +21,7 @@ export function slackMetadataToForeignIds(metadata:  {
   return {};
 }
 
-export function foreignIdsToSlackMetadata(foreignIds: object) {
+export function foreignIdsToSlackMetadata(foreignIds: object): object {
   return {
     event_type: 'devonian',
     event_payload: {
@@ -41,7 +41,7 @@ export class SlackMessageClient extends DevonianClient<SlackMessage> {
     });
   }
 
-  async add(obj: SlackMessage) {
+  async add(obj: SlackMessage): Promise<string> {
     console.log('make an API call to post this message to Slack', obj);
     return 'ts';
   }
