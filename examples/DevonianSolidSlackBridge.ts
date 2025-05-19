@@ -1,5 +1,7 @@
-import { DevonianTable, DevonianLens, DevonianClient } from './DevonianLens.js';
-import { DevonianIndex } from './DevonianIndex.js';
+import { DevonianClient } from '../src/DevonianClient.js';
+import { DevonianTable } from '../src/DevonianTable.js';
+import { DevonianLens } from '../src/DevonianLens.js';
+import { DevonianIndex } from '../src/DevonianIndex.js';
 import { SolidMessage } from './DevonianSolid.js';
 import { SlackMessage } from './DevonianSlack.js';
 

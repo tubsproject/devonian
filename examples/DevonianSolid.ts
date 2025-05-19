@@ -1,5 +1,5 @@
-import { DevonianClient } from './DevonianLens.js';
-import { DevonianIndex, ForeignIds } from './DevonianIndex.js';
+import { DevonianClient } from '../src/DevonianClient.js';
+import { DevonianIndex, ForeignIds } from '../src/DevonianIndex.js';
 
 
 export function solidSameasToForeignIds(sameAs: string[]): { [platform: string]: string } {

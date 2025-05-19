@@ -1,5 +1,5 @@
-import { DevonianClient } from './DevonianLens.js';
-import { DevonianIndex, ForeignIds } from './DevonianIndex.js';
+import { DevonianClient } from '../src/DevonianLens.js';
+import { DevonianIndex, ForeignIds } from '../src/DevonianIndex.js';
 
 export type SlackMessage = {
   ts?: string,
@@ -37,19 +37,12 @@ export class SlackMessageClient extends DevonianClient<SlackMessage> {
     this.index = index;
     this.on('add', (obj: SlackMessage) => {
       console.log('incoming slack message');
-      this.storeIdentitiesFromSlack(obj);
+      this.index.storeIdentitiesFrom('message', 'slack', obj.ts, obj.foreignIds);
     });
   }
 
-  storeIdentitiesFromSlack(input: SlackMessage) {
-    // if (typeof input.metadata === 'object' && input.metadata.event_type === 'devonian') {
-    //   const foreignIds = input.metadata.event_payload.foreignIds || {};
-      this.index.storeIdentitiesFrom('message', 'slack', input.ts, input.foreignIds);
-    // }
-  }
-
   async add(obj: SlackMessage) {
-    this.storeIdentitiesFromSlack(obj);
+    console.log('make an API call to post this message to Slack', obj);
     return 'ts';
   }
 }
