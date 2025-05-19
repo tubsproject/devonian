@@ -3,7 +3,7 @@ import { DevonianClient } from './DevonianClient.js';
 
 export class DevonianTable<Model> extends EventEmitter {
   rows: Model[] = [];
-  client: DevonianClient<Model>
+  client: DevonianClient<Model>;
   constructor(client: DevonianClient<Model>) {
     super();
     this.client = client;

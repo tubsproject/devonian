@@ -42,7 +42,7 @@ export class DevonianIndex {
     return undefined;
   }
 
-  ensureIndexed(model: string, i: number){
+  ensureIndexed(model: string, i: number): void {
     if (typeof this.index[model] === 'undefined') {
       this.index[model] = {};
     }
@@ -79,7 +79,7 @@ export class DevonianIndex {
     }
     this.ensureIndexed(model, i);
   }
-  storeEquivalences(equivalences: Equivalences) {
+  storeEquivalences(equivalences: Equivalences): void {
     Object.keys(equivalences).forEach((model: string) => {
       // console.log('storeEquivalences', model);
       equivalences[model].forEach((thing: ForeignIds) => {
@@ -89,7 +89,12 @@ export class DevonianIndex {
           delete filtered[platform];
           // console.log('storeEquivalences', model, thing, platform, filtered);
           if (Object.keys(filtered).length > 0) {
-            this.storeIdentitiesFrom(model, platform, thing[platform], filtered);
+            this.storeIdentitiesFrom(
+              model,
+              platform,
+              thing[platform],
+              filtered,
+            );
           }
         });
       });
