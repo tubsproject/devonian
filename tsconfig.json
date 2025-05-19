@@ -19,5 +19,5 @@
     "noImplicitThis": false,
     "strictNullChecks": false,
   },
-  "include": ["src", "__tests__", "examples/DevonianSolidSlackBridge.ts", "examples/DevonianSlack.ts"]
+  "include": ["src", "__tests__", "examples"]
 }

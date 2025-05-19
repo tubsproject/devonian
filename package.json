@@ -6,6 +6,9 @@
   "engines": {
     "node": ">= 22.11 < 23"
   },
+  "exports": {
+    ".": "./build/src/main.js"
+  },
   "devDependencies": {
     "@eslint/js": "~9.17",
     "@types/eslint__js": "~8.42",
@@ -28,7 +31,7 @@
     "start": "node build/src/main.js",
     "clean": "rimraf coverage build tmp",
     "prebuild": "npm run lint",
-    "build": "tsc -p tsconfig.json",
+    "build": "rm -rf docs ; tsc -p tsconfig.json ; npx typedoc",
     "build:watch": "tsc -w -p tsconfig.json",
     "build:release": "npm run clean && tsc -p tsconfig.release.json",
     "lint": "eslint .",
