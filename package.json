@@ -34,11 +34,11 @@
   "scripts": {
     "start": "node build/src/main.js",
     "clean": "rimraf coverage build tmp",
-    "prebuild": "rm -rf docs ; npm run lint",
+    "prebuild": "npm run lint",
     "build": "tsc -p tsconfig.json ; pnpx typedoc",
     "build:watch": "tsc -w -p tsconfig.json",
     "build:release": "npm run clean && tsc -p tsconfig.release.json",
-    "lint": "eslint .",
+    "lint": "eslint . --ignore-pattern 'docs/*' ",
     "test": "vitest run unit --config __tests__/vitest.config.ts",
     "test:coverage": "vitest run unit --config __tests__/vitest.config.ts --coverage.enabled --coverage.all",
     "prettier": "prettier \"{src,__{tests}__}/**/*.{ts,mts}\" --config .prettierrc --write",
