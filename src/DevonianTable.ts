@@ -3,21 +3,17 @@ import { DevonianClient } from './DevonianClient.js';
 
 export class DevonianTable<Model> extends EventEmitter {
   rows: Model[] = [];
+  client: DevonianClient<Model>
   constructor(client: DevonianClient<Model>) {
     super();
-    this.on('add-from-lens', (obj: Model) => {
-      client.add(obj);
-    });
-    client.on('incoming', (obj: Model) => {
-      this.addFromClient(obj);
+    this.client = client;
+    client.on('add-from-client', (obj: Model) => {
+      this.rows.push(obj);
+      this.emit('add-from-client', obj);
     });
   }
-  async addFromLens(obj: Model): Promise<void> {
+  addFromLens(obj: Model) {
     this.rows.push(obj);
-    this.emit('add-from-lens', obj);
-  }
-  async addFromClient(obj: Model): Promise<void> {
-    this.rows.push(obj);
-    this.emit('add-from-client', obj);
+    this.client.add(obj);
   }
 }

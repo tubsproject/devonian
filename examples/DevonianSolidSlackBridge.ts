@@ -18,7 +18,6 @@ export class DevonianSolidSlackBridge {
       this.solidMessageTable,
       this.slackMessageTable,
       (input: SolidMessage): SlackMessage => {
-        // this.storeIdentitiesFromSolid(input);
         const ret = {
           ts: this.index.convert('message', 'solid', input.uri, 'slack'),
           user: this.index.convert('person', 'solid', input.authorWebId, 'slack'),
@@ -30,7 +29,6 @@ export class DevonianSolidSlackBridge {
         return ret;
       },
       (input: SlackMessage): SolidMessage => {
-        // this.storeIdentitiesFromSlack(input);
         const ret = {
           uri: this.index.convert('message', 'slack', input.ts, 'solid'),
           chatUri: this.index.convert('channel', 'slack', input.channel, 'solid'),
@@ -45,7 +43,3 @@ export class DevonianSolidSlackBridge {
     );
   }
 }
-
-// ...
-// const index = new DevonianIndex();
-// new DevonianSolidSlackBridge(index, new SolidMessageClient(index), new SlackMessageClient(index));

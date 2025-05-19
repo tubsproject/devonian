@@ -15,7 +15,7 @@ class MockClient<Model> extends EventEmitter {
   }
   fakeIncoming(obj: Model): void {
     // console.log('fake incoming in mock client', obj);
-    this.emit('incoming', obj);
+    this.emit('add-from-client', obj);
   }
 }
 
