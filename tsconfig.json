@@ -6,6 +6,7 @@
     "moduleResolution": "node16",
     "rootDir": ".",
     "outDir": "build",
+    "declaration": true,
     "allowSyntheticDefaultImports": true,
     "importHelpers": true,
     "alwaysStrict": true,
