@@ -43,26 +43,26 @@ export class ExtractEntityBridge {
       this.acmeLinkedOrderTable,
       (input: AcmeOrder): AcmeLinkedOrder => {
         const ret = {
-          id: parseInt(this.index.convert('order', 'unlinked', input.id.toString(), 'linked')),
+          id: parseInt(this.index.convert('order', 'comprehensive', input.id.toString(), 'linked')),
           item: input.item,
           quantity: input.quantity,
           shipDate: input.shipDate,
           customerId: 0, // how do we handle this lookup?
-          // foreignIds: this.index.convertForeignIds('order', 'unlinked', input.id.toString(), input.foreignIds, 'linked'),
-          foreignIds: this.index.convertForeignIds('unlinked', input.id.toString(), input.foreignIds, 'linked'),
+          // foreignIds: this.index.convertForeignIds('order', 'comprehensive', input.id.toString(), input.foreignIds, 'linked'),
+          foreignIds: this.index.convertForeignIds('comprehensive', input.id.toString(), input.foreignIds, 'linked'),
         };
         // console.log('converting from Solid to Slack', input, ret);
         return ret;
       },
       (input: AcmeLinkedOrder): AcmeOrder => {
         const ret = {
-          id: parseInt(this.index.convert('order', 'unlinked', input.id.toString(), 'linked')),
+          id: parseInt(this.index.convert('order', 'comprehensive', input.id.toString(), 'linked')),
           item: input.item,
           quantity: input.quantity,
           shipDate: input.shipDate,
           customerName: 'a', // how do we handle this lookup?
           customerAddress: 'b', // how do we handle this lookup?
-          // foreignIds: this.index.convertForeignIds('order', 'unlinked', input.id.toString(), input.foreignIds, 'linked'),
+          // foreignIds: this.index.convertForeignIds('order', 'comprehensive', input.id.toString(), input.foreignIds, 'linked'),
           foreignIds: this.index.convertForeignIds('linked', input.id.toString(), input.foreignIds, 'linked'),
         };
         // console.log('converting from Slack to Solid', input, ret);

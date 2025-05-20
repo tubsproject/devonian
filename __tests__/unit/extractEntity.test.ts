@@ -34,7 +34,7 @@ describe('DevonianSolidSlackBridge', () => {
   const acmeLinkedOrderMockClient = new MockClient<AcmeLinkedOrder>();
   new ExtractEntityBridge(index, acmeOrderMockClient, acmeLinkedOrderMockClient);
   // console.log('Solid is left, Slack is right');
-  it('can go from unlinked to linked', async () => {
+  it('can go from comprehensive to linked', async () => {
     acmeOrderMockClient.fakeIncoming({
       id: 0,
       item: 'Anvil',
@@ -52,12 +52,12 @@ describe('DevonianSolidSlackBridge', () => {
       shipDate: new Date('2023-02-03T00:00:00Z'),
       customerId: 0,
       foreignIds: {
-        unlinked: '0',
+        comprehensive: '0',
       },
     }]);
   });
 
-  it('can go from linked to unlinked', async () => {
+  it('can go from linked to comprehensive', async () => {
     acmeLinkedOrderMockClient.fakeIncoming({
       id: 0,
       item: 'Anvil',
