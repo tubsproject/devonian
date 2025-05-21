@@ -16,4 +16,18 @@ export class DevonianTable<Model> extends EventEmitter {
     this.rows.push(obj);
     this.client.add(obj);
   }
+  findWhere(field: string, where: { [field: string]: string }) {
+    for (let i = 0; i < this.rows.length; i++) {
+      for (let j = 0; j < Object.keys(where).length; j++) {
+        const whereField = Object.keys(where)[j];
+        if (this.rows[i][whereField] !== where[whereField]) {
+          console.log(`Row ${i} mismatch on ${whereField}`);
+          continue;
+        }
+      }
+      console.log(`Row ${i} match`);
+      return this.rows[i][field];
+    }
+    return undefined;
+  }
 }

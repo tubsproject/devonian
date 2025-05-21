@@ -1,8 +1,7 @@
 import { EventEmitter } from 'node:events';
 import { describe, it, expect } from 'vitest';
-import { DevonianTable } from '../../src/DevonianTable.js';
 import { DevonianIndex } from '../../src/DevonianIndex.js';
-import { AcmeOrder, AcmeCustomer, AcmeLinkedOrder, ExtractEntityBridge } from '../../examples/ExtractEntity.js';
+import { AcmeOrder, AcmeLinkedOrder, AcmeCustomer, ExtractEntityBridge } from '../../examples/ExtractEntity.js';
 
 class MockClient<Model> extends EventEmitter {
   added: Model[] = [];
@@ -18,21 +17,22 @@ class MockClient<Model> extends EventEmitter {
   }
 }
 
-const client1 = new MockClient<AcmeOrder>();
-const client2 = new MockClient<AcmeCustomer>();
-const client3 = new MockClient<AcmeLinkedOrder>();
+// const client1 = new MockClient<AcmeOrder>();
+// const client2 = new MockClient<AcmeCustomer>();
+// const client3 = new MockClient<AcmeLinkedOrder>();
 
-const table1 = new DevonianTable<AcmeOrder>(client1);
-const table2 = new DevonianTable<AcmeCustomer>(client2);
-const table3 = new DevonianTable<AcmeLinkedOrder>(client3);
+// const table1 = new DevonianTable<AcmeOrder>(client1);
+// const table2 = new DevonianTable<AcmeCustomer>(client2);
+// const table3 = new DevonianTable<AcmeLinkedOrder>(client3);
 
-void table1, table2, table3
+// void table1, table2, table3
 
 describe('DevonianSolidSlackBridge', () => {
   const index = new DevonianIndex();
   const acmeOrderMockClient = new MockClient<AcmeOrder>();
+  const acmeCustomerMockClient = new MockClient<AcmeCustomer>();
   const acmeLinkedOrderMockClient = new MockClient<AcmeLinkedOrder>();
-  new ExtractEntityBridge(index, acmeOrderMockClient, acmeLinkedOrderMockClient);
+  const bridge = new ExtractEntityBridge(index, acmeOrderMockClient, acmeCustomerMockClient, acmeLinkedOrderMockClient);
   // console.log('Solid is left, Slack is right');
   it('can go from comprehensive to linked', async () => {
     acmeOrderMockClient.fakeIncoming({
@@ -40,13 +40,18 @@ describe('DevonianSolidSlackBridge', () => {
       item: 'Anvil',
       quantity: 1,
       shipDate: new Date('2023-02-03T00:00:00Z'),
-      customerName: '',
-      customerAddress: '',
+      customerName: 'Wile E Coyote',
+      customerAddress: '123 Desert Station',
       foreignIds: {},
     });
     await new Promise(resolve => setTimeout(resolve, 0));
+    expect(acmeCustomerMockClient.added).toEqual([{
+      id: undefined,
+      name: 'Wile E Coyote',
+      address: '123 Desert Station',
+    }]);
     expect(acmeLinkedOrderMockClient.added).toEqual([{
-      id: NaN,
+      id: undefined,
       item: 'Anvil',
       quantity: 1,
       shipDate: new Date('2023-02-03T00:00:00Z'),
@@ -55,6 +60,11 @@ describe('DevonianSolidSlackBridge', () => {
         comprehensive: '0',
       },
     }]);
+    expect(bridge.acmeOrderTable.rows).toEqual({});
+    expect(bridge.acmeCustomerTable.rows).toEqual({});
+    expect(bridge.acmeLinkedOrderTable.rows).toEqual({});
+    expect(index.ids).toEqual({});
+    expect(index.index).toEqual({});
   });
 
   it('can go from linked to comprehensive', async () => {

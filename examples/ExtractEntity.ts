@@ -32,37 +32,44 @@ export type AcmeLinkedOrder = {
 export class ExtractEntityBridge {
   index: DevonianIndex
   acmeOrderTable: DevonianTable<AcmeOrder>;
+  acmeCustomerTable: DevonianTable<AcmeCustomer>;
   acmeLinkedOrderTable: DevonianTable<AcmeLinkedOrder>;
 
-  constructor(index: DevonianIndex, acmeOrderClient: DevonianClient<AcmeOrder>, acmeLinkedOrderClient: DevonianClient<AcmeLinkedOrder>) {
+  constructor(index: DevonianIndex, acmeOrderClient: DevonianClient<AcmeOrder>, acmeCustomerClient: DevonianClient<AcmeCustomer>, acmeLinkedOrderClient: DevonianClient<AcmeLinkedOrder>) {
     this.index = index;
     this.acmeOrderTable = new DevonianTable<AcmeOrder>(acmeOrderClient);
+    this.acmeCustomerTable = new DevonianTable<AcmeCustomer>(acmeCustomerClient);
     this.acmeLinkedOrderTable = new DevonianTable<AcmeLinkedOrder>(acmeLinkedOrderClient);
     new DevonianLens<AcmeOrder, AcmeLinkedOrder>(
       this.acmeOrderTable,
       this.acmeLinkedOrderTable,
       (input: AcmeOrder): AcmeLinkedOrder => {
+        const customerId = this.acmeCustomerTable.findWhere('id', {
+          name: input.customerName,
+          address: input.customerAddress,
+        });
+        const linkedId = this.index.convert('order', 'comprehensive', input.id.toString(), 'linked');
         const ret = {
-          id: parseInt(this.index.convert('order', 'comprehensive', input.id.toString(), 'linked')),
+          id: (typeof linkedId === 'string' ? parseInt(linkedId) : undefined),
           item: input.item,
           quantity: input.quantity,
           shipDate: input.shipDate,
-          customerId: 0, // how do we handle this lookup?
-          // foreignIds: this.index.convertForeignIds('order', 'comprehensive', input.id.toString(), input.foreignIds, 'linked'),
+          customerId,
           foreignIds: this.index.convertForeignIds('comprehensive', input.id.toString(), input.foreignIds, 'linked'),
         };
         // console.log('converting from Solid to Slack', input, ret);
         return ret;
       },
       (input: AcmeLinkedOrder): AcmeOrder => {
+        const comprehensiveId = this.index.convert('order', 'linked', input.id.toString(), 'comprehensive');
+        const customer = this.acmeCustomerTable.rows[input.customerId];
         const ret = {
-          id: parseInt(this.index.convert('order', 'comprehensive', input.id.toString(), 'linked')),
+          id: (typeof comprehensiveId === 'string' ? parseInt(comprehensiveId) : undefined),
           item: input.item,
           quantity: input.quantity,
           shipDate: input.shipDate,
-          customerName: 'a', // how do we handle this lookup?
-          customerAddress: 'b', // how do we handle this lookup?
-          // foreignIds: this.index.convertForeignIds('order', 'comprehensive', input.id.toString(), input.foreignIds, 'linked'),
+          customerName: customer.name,
+          customerAddress: customer.name,
           foreignIds: this.index.convertForeignIds('linked', input.id.toString(), input.foreignIds, 'linked'),
         };
         // console.log('converting from Slack to Solid', input, ret);
