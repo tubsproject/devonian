@@ -1,10 +1,8 @@
 import { DevonianClient } from '../src/DevonianClient.js';
 import { IdentifierMap } from '../src/DevonianIndex.js';
+import { DevonianModel } from '../src/DevonianTable.js';
 
-
-
-export type SolidMessage = {
-  uri?: string,
+export type SolidMessageWithoutId = DevonianModel & {
   chatUri: string,
   text: string,
   authorWebId: string,
@@ -12,9 +10,13 @@ export type SolidMessage = {
   foreignIds: IdentifierMap,
 };
 
-export class SolidMessageClient extends DevonianClient<SolidMessage> {
-  async add(obj: SolidMessage): Promise<string> {
+export type SolidMessage = SolidMessageWithoutId & {
+  uri?: string,
+};
+
+export class SolidMessageClient extends DevonianClient<SolidMessageWithoutId, SolidMessage> {
+  async add(obj: SolidMessageWithoutId): Promise<SolidMessage> {
     console.log('make an API call', obj);
-    return 'uri';
+    return Object.assign(obj, { uri: 'uri' });
   }
 }
