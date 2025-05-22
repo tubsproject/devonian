@@ -24,11 +24,12 @@ class MockClient<Model> extends EventEmitter {
 }
 
 describe('ExtractEntity', () => {
+  const replicaId = `devonian-test-instance`;
   const index = new DevonianIndex();
   const acmeOrderMockClient = new MockClient<AcmeOrder>('orders');
   const acmeCustomerMockClient = new MockClient<AcmeCustomer>('customers');
   const acmeLinkedOrderMockClient = new MockClient<AcmeLinkedOrder>('linked orders');
-  const bridge = new ExtractEntityBridge(index, acmeOrderMockClient, acmeCustomerMockClient, acmeLinkedOrderMockClient);
+  const bridge = new ExtractEntityBridge(index, acmeOrderMockClient, acmeCustomerMockClient, acmeLinkedOrderMockClient, replicaId);
   // console.log('Comprehensive is left, Linked is right');
   it('can go from comprehensive to linked', async () => {
     console.log('fakeIncoming Anvil');
@@ -72,7 +73,7 @@ describe('ExtractEntity', () => {
       name: 'Daffy Duck',
       address: 'White Rock Lake',
     }]);
-    expect(acmeLinkedOrderMockClient.added.map(row => JSON.stringify(row)).sort()).toEqual([{
+    expect(acmeLinkedOrderMockClient.added.sort((a, b) => a.item.length - b.item.length)).toEqual([{
       id: undefined,
       item: 'Anvil',
       quantity: 1,
@@ -101,8 +102,8 @@ describe('ExtractEntity', () => {
       "foreignIds": {
         "comprehensive": "2",
       },
-    }].map(row => JSON.stringify(row)).sort());
-    expect(bridge.acmeOrderTable.rows.sort()).toEqual([{
+    }]);
+    expect(bridge.acmeOrderTable.rows.sort((a, b) => a.id - b.id)).toEqual([{
       "id": 0,
       "item": "Anvil",
       "quantity": 1,
@@ -128,22 +129,20 @@ describe('ExtractEntity', () => {
       "customerName": "Wile E Coyote",
       "customerAddress": "123 Desert Station",
       "foreignIds": {},
-    }].sort());
-    await Promise.all(bridge.acmeCustomerTable.rows.map(async row => { row.id = await row.id; }));
-    expect(bridge.acmeCustomerTable.rows.sort()).toEqual([
-      {
-        "id": "0",
-        "name": "Wile E Coyote",
-        "address": "123 Desert Station",
-      },
+    }]);
+    expect(bridge.acmeCustomerTable.rows.sort((a, b) => a.id - b.id)).toEqual([
       {
         "id": "1",
         "name": "Daffy Duck",
         "address": "White Rock Lake",
       },
-    ].sort());
-    await Promise.all(bridge.acmeLinkedOrderTable.rows.map(async row => { row.id = await row.id; }));
-    expect(bridge.acmeLinkedOrderTable.rows.sort()).to.deep.equal([{
+      {
+        "id": "0",
+        "name": "Wile E Coyote",
+        "address": "123 Desert Station",
+      },
+    ]);
+    expect(bridge.acmeLinkedOrderTable.rows.sort((a, b) => a.id - b.id)).toEqual([{
       "id": "0",
       "item": "Bird Seed",
       "quantity": 1,
@@ -170,7 +169,7 @@ describe('ExtractEntity', () => {
       "foreignIds": {
         "comprehensive": "1",
       },
-    }].sort());
+    }]);
     expect(index.ids).toEqual({});
     expect(index.index).toEqual({});
   });

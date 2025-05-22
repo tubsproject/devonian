@@ -1,6 +1,6 @@
-import { DevonianTable } from './DevonianTable.js';
+import { DevonianTable, DevonianModel } from './DevonianTable.js';
 
-export class DevonianLens<LeftModel, RightModel> {
+export class DevonianLens<LeftModel extends DevonianModel, RightModel extends DevonianModel> {
   left: DevonianTable<LeftModel>;
   right: DevonianTable<RightModel>;
   constructor(

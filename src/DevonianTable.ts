@@ -1,24 +1,36 @@
 import { EventEmitter } from 'node:events';
 import { DevonianClient } from './DevonianClient.js';
+import { ForeignIds } from './DevonianIndex.js';
+
+export type DevonianModel = {
+  id: number;
+  foreignIds: ForeignIds;
+};
 
 export class DevonianTable<Model> extends EventEmitter {
-  rows: Model[] = [];
+  rows: DevonianModel[] = [];
   client: DevonianClient<Model>;
-  constructor(client: DevonianClient<Model>) {
+  platform: string;
+  processId: string;
+  constructor(client: DevonianClient<Model>, platform: string, replicaId: string) {
     super();
     this.client = client;
-    client.on('add-from-client', (obj: Model) => {
+    this.platform = platform;
+    this.processId = `devonian-${replicaId}`;
+    client.on('add-from-client', (obj: DevonianModel) => {
       console.log('Adding to table', obj);
+      const position = this.rows.length;
+      obj.foreignIds[this.processId] = position.toString();
       this.rows.push(obj);
       this.emit('add-from-client', obj);
     });
   }
-  async addFromLens(obj: Model): Promise<string> {
-    const toStore = JSON.parse(JSON.stringify(obj));
-    toStore.id = this.client.add(obj);
-    this.rows.push(toStore);
-    console.log('after store', this.rows);
-    return toStore.id;
+  async addFromLens(obj: DevonianModel): Promise<string> {
+    const position = obj.foreignIds[this.processId];
+    this.rows[position] = obj;
+    const idOnPlatform = await this.client.add(obj as Model);
+    this.rows[position].foreignIds[this.platform] = idOnPlatform;
+    return idOnPlatform;
   }
   rowMatches(i: number, where: { [field: string]: string }) {
     for (let j = 0; j < Object.keys(where).length; j++) {
