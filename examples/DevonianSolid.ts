@@ -1,5 +1,5 @@
 import { DevonianClient } from '../src/DevonianClient.js';
-import { IdentityMap } from '../src/DevonianIndex.js';
+import { IdentifierMap } from '../src/DevonianIndex.js';
 
 
 
@@ -9,7 +9,7 @@ export type SolidMessage = {
   text: string,
   authorWebId: string,
   date?: Date,
-  foreignIds: IdentityMap,
+  foreignIds: IdentifierMap,
 };
 
 export class SolidMessageClient extends DevonianClient<SolidMessage> {

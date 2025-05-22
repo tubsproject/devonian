@@ -1,11 +1,11 @@
 import { DevonianTable, DevonianModel } from './DevonianTable.js';
 
-export class DevonianLens<LeftModel extends DevonianModel, RightModel extends DevonianModel> {
-  left: DevonianTable<LeftModel>;
-  right: DevonianTable<RightModel>;
+export class DevonianLens<LeftModelWithoutId extends DevonianModel, RightModelWithoutId extends DevonianModel, LeftModel extends LeftModelWithoutId, RightModel extends RightModelWithoutId> {
+  left: DevonianTable<LeftModelWithoutId, LeftModel>;
+  right: DevonianTable<RightModelWithoutId, RightModel>;
   constructor(
-    left: DevonianTable<LeftModel>,
-    right: DevonianTable<RightModel>,
+    left: DevonianTable<LeftModelWithoutId, LeftModel>,
+    right: DevonianTable<RightModelWithoutId, RightModel>,
     leftToRight: (input: LeftModel) => Promise<RightModel>,
     rightToLeft: (input: RightModel) => Promise<LeftModel>,
   ) {

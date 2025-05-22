@@ -1,12 +1,12 @@
 import { DevonianClient } from '../src/DevonianClient.js';
-import { IdentityMap } from '../src/DevonianIndex.js';
+import { IdentifierMap } from '../src/DevonianIndex.js';
 
 export type SlackMessage = {
   ts?: string,
   user?: string,
   channel: string,
   text: string,
-  foreignIds: IdentityMap,
+  foreignIds: IdentifierMap,
 };
 
 export class SlackMessageClient extends DevonianClient<SlackMessage> {

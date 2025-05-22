@@ -5,47 +5,57 @@ import { DevonianLens } from '../src/DevonianLens.js';
 import { DevonianIndex  } from '../src/DevonianIndex.js';
 
 // this refers to section 2.2 of https://arxiv.org/pdf/2309.11406
-export type AcmeOrder = DevonianModel & {
+export type AcmeOrderWithoutId = DevonianModel & {
   item: string;
   quantity: number;
   shipDate: Date;
   customerName: string;
   customerAddress: string;
 }
+export type AcmeOrder =  AcmeOrderWithoutId & {
+  id: number;
 
-export type AcmeCustomer =  DevonianModel & {
+}
+export type AcmeCustomerWithoutId =  DevonianModel & {
   name: string;
   address: string;
 }
+export type AcmeCustomer =  AcmeCustomerWithoutId & {
+  id: number;
+}
 
-export type AcmeLinkedOrder =  DevonianModel & {
+export type AcmeLinkedOrderWithoutId =  DevonianModel & {
   item: string;
   quantity: number;
   shipDate: Date;
   customerId: number;
 }
+export type AcmeLinkedOrder =  AcmeLinkedOrderWithoutId & {
+  id: number;
+}
 
 export class ExtractEntityBridge {
-  index: DevonianIndex
-  acmeOrderTable: DevonianTable<AcmeOrder>;
-  acmeCustomerTable: DevonianTable<AcmeCustomer>;
-  acmeLinkedOrderTable: DevonianTable<AcmeLinkedOrder>;
+  index: DevonianIndex;
+  acmeOrderTable: DevonianTable<AcmeOrderWithoutId, AcmeOrder>;
+  acmeCustomerTable: DevonianTable<AcmeCustomerWithoutId, AcmeCustomer>;
+  acmeLinkedOrderTable: DevonianTable<AcmeLinkedOrderWithoutId, AcmeLinkedOrder>;
 
-  constructor(index: DevonianIndex, acmeOrderClient: DevonianClient<AcmeOrder>, acmeCustomerClient: DevonianClient<AcmeCustomer>, acmeLinkedOrderClient: DevonianClient<AcmeLinkedOrder>, replicaId?: string) {
+  constructor(index: DevonianIndex, acmeOrderClient: DevonianClient<AcmeOrderWithoutId, AcmeOrder>, acmeCustomerClient: DevonianClient<AcmeCustomerWithoutId, AcmeCustomer>, acmeLinkedOrderClient: DevonianClient<AcmeLinkedOrderWithoutId, AcmeLinkedOrder>, replicaId?: string) {
     if (typeof replicaId === 'undefined') {
       replicaId = randomBytes(8).toString('hex');
     }
     this.index = index;
-    this.acmeOrderTable = new DevonianTable<AcmeOrder>(acmeOrderClient, 'comprehensive', replicaId);
-    this.acmeCustomerTable = new DevonianTable<AcmeCustomer>(acmeCustomerClient, 'linked', replicaId);
-    this.acmeLinkedOrderTable = new DevonianTable<AcmeLinkedOrder>(acmeLinkedOrderClient, 'linked', replicaId);
-    new DevonianLens<AcmeOrder, AcmeLinkedOrder>(
+    this.acmeOrderTable = new DevonianTable<AcmeOrderWithoutId, AcmeOrder>({ client: acmeOrderClient, platform: 'comprehensive', idFieldName: 'id', replicaId });
+    this.acmeCustomerTable = new DevonianTable<AcmeCustomerWithoutId, AcmeCustomer>({ client: acmeCustomerClient, platform: 'linked', idFieldName: 'id', replicaId });
+    this.acmeLinkedOrderTable = new DevonianTable<AcmeLinkedOrderWithoutId, AcmeLinkedOrder>({ client: acmeLinkedOrderClient, platform: 'linked', idFieldName: 'id', replicaId });
+    new DevonianLens<AcmeOrderWithoutId, AcmeLinkedOrderWithoutId, AcmeOrder, AcmeLinkedOrder>(
       this.acmeOrderTable,
       this.acmeLinkedOrderTable,
       async (input: AcmeOrder): Promise<AcmeLinkedOrder> => {
-        const customerId = await this.acmeCustomerTable.findWhere('id', {
+        const customerId = await this.acmeCustomerTable.getPlatformId({
           name: input.customerName,
           address: input.customerAddress,
+          foreignIds: {},
         }, true);
         console.log("Found customerId", customerId, input.customerName, input.customerAddress);
         const linkedId = this.index.convert('order', 'comprehensive', input.id.toString(), 'linked');
@@ -54,7 +64,7 @@ export class ExtractEntityBridge {
           item: input.item,
           quantity: input.quantity,
           shipDate: input.shipDate,
-          customerId: parseInt(customerId),
+          customerId: customerId as number,
           foreignIds: this.index.convertForeignIds('comprehensive', input.id.toString(), input.foreignIds, 'linked'),
         };
         console.log('converting from comprehensive to linked', input, ret);
@@ -62,7 +72,7 @@ export class ExtractEntityBridge {
       },
       async (input: AcmeLinkedOrder): Promise<AcmeOrder> => {
         const comprehensiveId = this.index.convert('order', 'linked', input.id.toString(), 'comprehensive');
-        const customer = this.acmeCustomerTable.rows[input.customerId] as unknown as { name: string, address: string };
+        const customer = this.acmeCustomerTable.getRows()[input.customerId] as unknown as { name: string, address: string };
         const ret = {
           id: (typeof comprehensiveId === 'string' ? parseInt(comprehensiveId) : undefined),
           item: input.item,

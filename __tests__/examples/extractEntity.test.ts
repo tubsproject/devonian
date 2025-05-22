@@ -1,34 +1,14 @@
-import { EventEmitter } from 'node:events';
+import { MockClient } from '../MockClient.js';
 import { describe, it, expect } from 'vitest';
 import { DevonianIndex } from '../../src/DevonianIndex.js';
-import { AcmeOrder, AcmeLinkedOrder, AcmeCustomer, ExtractEntityBridge } from '../../examples/ExtractEntity.js';
-
-class MockClient<Model> extends EventEmitter {
-  added: Model[] = [];
-  name: string;
-
-  constructor(name: string) {
-    super();
-    this.name = name;
-  }
-  async add(obj: Model): Promise<string> {
-    const position = this.added.length;
-    console.log(`Adding in ${this.name} mock client`, obj, position);
-    this.added.push(obj);
-    return position.toString();
-  }
-  fakeIncoming(obj: Model): void {
-    // console.log('fake incoming in mock client', obj);
-    this.emit('add-from-client', obj);
-  }
-}
+import { AcmeOrderWithoutId, AcmeLinkedOrderWithoutId, AcmeCustomerWithoutId, AcmeOrder, AcmeLinkedOrder, AcmeCustomer, ExtractEntityBridge } from '../../examples/ExtractEntity.js';
 
 describe('ExtractEntity', () => {
   const replicaId = `devonian-test-instance`;
   const index = new DevonianIndex();
-  const acmeOrderMockClient = new MockClient<AcmeOrder>('orders');
-  const acmeCustomerMockClient = new MockClient<AcmeCustomer>('customers');
-  const acmeLinkedOrderMockClient = new MockClient<AcmeLinkedOrder>('linked orders');
+  const acmeOrderMockClient = new MockClient<AcmeOrderWithoutId, AcmeOrder>('orders');
+  const acmeCustomerMockClient = new MockClient<AcmeCustomerWithoutId, AcmeCustomer>('customers');
+  const acmeLinkedOrderMockClient = new MockClient<AcmeLinkedOrderWithoutId, AcmeLinkedOrder>('linked orders');
   const bridge = new ExtractEntityBridge(index, acmeOrderMockClient, acmeCustomerMockClient, acmeLinkedOrderMockClient, replicaId);
   // console.log('Comprehensive is left, Linked is right');
   it('can go from comprehensive to linked', async () => {
@@ -103,7 +83,7 @@ describe('ExtractEntity', () => {
         "comprehensive": "2",
       },
     }]);
-    expect(bridge.acmeOrderTable.rows.sort((a, b) => a.id - b.id)).toEqual([{
+    expect(bridge.acmeOrderTable.getRows()).toEqual([{
       "id": 0,
       "item": "Anvil",
       "quantity": 1,
@@ -130,7 +110,7 @@ describe('ExtractEntity', () => {
       "customerAddress": "123 Desert Station",
       "foreignIds": {},
     }]);
-    expect(bridge.acmeCustomerTable.rows.sort((a, b) => a.id - b.id)).toEqual([
+    expect(bridge.acmeCustomerTable.getRows()).toEqual([
       {
         "id": "1",
         "name": "Daffy Duck",
@@ -142,7 +122,7 @@ describe('ExtractEntity', () => {
         "address": "123 Desert Station",
       },
     ]);
-    expect(bridge.acmeLinkedOrderTable.rows.sort((a, b) => a.id - b.id)).toEqual([{
+    expect(bridge.acmeLinkedOrderTable.getRows()).toEqual([{
       "id": "0",
       "item": "Bird Seed",
       "quantity": 1,

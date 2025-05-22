@@ -1,31 +1,27 @@
-export type IdentityMap = {
-  [platform: string]: string;
+export type IdentifierMap = {
+  [platform: string]: string | number;
 };
 
 export type Equivalences = {
-  [model: string]: IdentityMap[];
+  [model: string]: IdentifierMap[];
 };
 
 export class DevonianIndex {
   ids: {
-    [model: string]: {
-      [platform: string]: string;
-    }[];
+    [model: string]: IdentifierMap[];
   } = {};
   index: {
     [model: string]: {
-      [platform: string]: {
-        [localId: string]: number;
-      };
+      [platform: string]: IdentifierMap;
     };
   } = {};
 
   lookupIndexFrom(
     model: string,
     platform: string,
-    localId: string,
+    localId: string | number,
     foreignIds: { [platform: string]: string },
-  ): number | undefined {
+  ): number | string | undefined {
     if (typeof this.index[model]?.[platform]?.[localId] === 'number') {
       return this.index[model]![platform]![localId];
     }
@@ -57,7 +53,7 @@ export class DevonianIndex {
   storeIdentitiesFrom(
     model: string,
     platform: string,
-    localId: string,
+    localId: string | number,
     foreignIds: { [platform: string]: string },
   ): void {
     let i = this.lookupIndexFrom(model, platform, localId, foreignIds);
@@ -82,7 +78,7 @@ export class DevonianIndex {
   storeEquivalences(equivalences: Equivalences): void {
     Object.keys(equivalences).forEach((model: string) => {
       // console.log('storeEquivalences', model);
-      equivalences[model].forEach((thing: IdentityMap) => {
+      equivalences[model].forEach((thing: IdentifierMap) => {
         // console.log('storeEquivalences', model, thing);
         Object.keys(thing).forEach((platform: string) => {
           const filtered = JSON.parse(JSON.stringify(thing));
@@ -106,8 +102,8 @@ export class DevonianIndex {
     fromPlatform: string,
     fromLocalId: string,
     toPlatform: string,
-  ): string | undefined {
-    const i: number | undefined =
+  ): string | number | undefined {
+    const i: string | number | undefined =
       this.index[model]?.[fromPlatform]?.[fromLocalId];
     if (typeof i === 'number') {
       return this.ids[model][i][toPlatform];
@@ -117,9 +113,9 @@ export class DevonianIndex {
   convertForeignIds(
     fromPlatform: string,
     fromId: string,
-    fromForeignIds: IdentityMap,
+    fromForeignIds: IdentifierMap,
     toPlatform: string,
-  ): IdentityMap {
+  ): IdentifierMap {
     const copied = JSON.parse(JSON.stringify(fromForeignIds));
     delete copied[toPlatform];
     copied[fromPlatform] = fromId;
