@@ -1,10 +1,10 @@
 import { EventEmitter } from 'node:events';
 import { DevonianClient } from './DevonianClient.js';
-import { ForeignIds } from './DevonianIndex.js';
+import { IdentityMap } from './DevonianIndex.js';
 
 export type DevonianModel = {
   id: number;
-  foreignIds: ForeignIds;
+  foreignIds: IdentityMap;
 };
 
 export class DevonianTable<Model> extends EventEmitter {

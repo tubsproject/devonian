@@ -1,9 +1,9 @@
-export type ForeignIds = {
+export type IdentityMap = {
   [platform: string]: string;
 };
 
 export type Equivalences = {
-  [model: string]: ForeignIds[];
+  [model: string]: IdentityMap[];
 };
 
 export class DevonianIndex {
@@ -82,7 +82,7 @@ export class DevonianIndex {
   storeEquivalences(equivalences: Equivalences): void {
     Object.keys(equivalences).forEach((model: string) => {
       // console.log('storeEquivalences', model);
-      equivalences[model].forEach((thing: ForeignIds) => {
+      equivalences[model].forEach((thing: IdentityMap) => {
         // console.log('storeEquivalences', model, thing);
         Object.keys(thing).forEach((platform: string) => {
           const filtered = JSON.parse(JSON.stringify(thing));
@@ -117,9 +117,9 @@ export class DevonianIndex {
   convertForeignIds(
     fromPlatform: string,
     fromId: string,
-    fromForeignIds: ForeignIds,
+    fromForeignIds: IdentityMap,
     toPlatform: string,
-  ): ForeignIds {
+  ): IdentityMap {
     const copied = JSON.parse(JSON.stringify(fromForeignIds));
     delete copied[toPlatform];
     copied[fromPlatform] = fromId;
