@@ -41,6 +41,8 @@
     "build:release": "npm run clean && tsc -p tsconfig.release.json",
     "lint": "eslint . --ignore-pattern 'docs/*' ",
     "test": "vitest run --config __tests__/vitest.config.ts",
+    "test:unit": "vitest run unit --config __tests__/vitest.config.ts",
+    "test:examples": "vitest run examples --config __tests__/vitest.config.ts",
     "test:coverage": "vitest run --config __tests__/vitest.config.ts --coverage.enabled --coverage.all",
     "prettier": "prettier \"{src,__{tests}__}/**/*.{ts,mts}\" --config .prettierrc --write",
     "prettier:check": "prettier \"{src,__{tests}__}/**/*.{ts,mts}\" --config .prettierrc --check",

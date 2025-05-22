@@ -43,24 +43,25 @@ export class ExtractEntityBridge {
     new DevonianLens<AcmeOrder, AcmeLinkedOrder>(
       this.acmeOrderTable,
       this.acmeLinkedOrderTable,
-      (input: AcmeOrder): AcmeLinkedOrder => {
-        const customerId = this.acmeCustomerTable.findWhere('id', {
+      async (input: AcmeOrder): Promise<AcmeLinkedOrder> => {
+        const customerId = await this.acmeCustomerTable.findWhere('id', {
           name: input.customerName,
           address: input.customerAddress,
-        });
+        }, true);
+        console.log("Found customerId", customerId, input.customerName, input.customerAddress);
         const linkedId = this.index.convert('order', 'comprehensive', input.id.toString(), 'linked');
         const ret = {
           id: (typeof linkedId === 'string' ? parseInt(linkedId) : undefined),
           item: input.item,
           quantity: input.quantity,
           shipDate: input.shipDate,
-          customerId,
+          customerId: parseInt(customerId),
           foreignIds: this.index.convertForeignIds('comprehensive', input.id.toString(), input.foreignIds, 'linked'),
         };
-        // console.log('converting from Solid to Slack', input, ret);
+        console.log('converting from comprehensive to linked', input, ret);
         return ret;
       },
-      (input: AcmeLinkedOrder): AcmeOrder => {
+      async (input: AcmeLinkedOrder): Promise<AcmeOrder> => {
         const comprehensiveId = this.index.convert('order', 'linked', input.id.toString(), 'comprehensive');
         const customer = this.acmeCustomerTable.rows[input.customerId];
         const ret = {
@@ -69,10 +70,10 @@ export class ExtractEntityBridge {
           quantity: input.quantity,
           shipDate: input.shipDate,
           customerName: customer.name,
-          customerAddress: customer.name,
+          customerAddress: customer.address,
           foreignIds: this.index.convertForeignIds('linked', input.id.toString(), input.foreignIds, 'linked'),
         };
-        // console.log('converting from Slack to Solid', input, ret);
+        console.log('converting from linked to comprehensive', input, ret);
         return ret;
       },
     );

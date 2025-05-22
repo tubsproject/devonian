@@ -6,18 +6,18 @@ export class DevonianLens<LeftModel, RightModel> {
   constructor(
     left: DevonianTable<LeftModel>,
     right: DevonianTable<RightModel>,
-    leftToRight: (input: LeftModel) => RightModel,
-    rightToLeft: (input: RightModel) => LeftModel,
+    leftToRight: (input: LeftModel) => Promise<RightModel>,
+    rightToLeft: (input: RightModel) => Promise<LeftModel>,
   ) {
     this.left = left;
     this.right = right;
-    left.on('add-from-client', (added: LeftModel) => {
+    left.on('add-from-client', async (added: LeftModel) => {
       // console.log('lens forwards addition event from left to right');
-      right.addFromLens(leftToRight(added));
+      right.addFromLens(await leftToRight(added));
     });
-    right.on('add-from-client', (added: RightModel) => {
+    right.on('add-from-client', async (added: RightModel) => {
       // console.log('lens forwards addition event from right to left');
-      left.addFromLens(rightToLeft(added));
+      left.addFromLens(await rightToLeft(added));
     });
   }
 }
