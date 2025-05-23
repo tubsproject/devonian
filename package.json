@@ -36,7 +36,6 @@
     "clean": "rimraf coverage build tmp",
     "prebuild": "npm run lint",
     "build": "tsc -p tsconfig.json",
-    "docs": "typedoc",
     "build:watch": "tsc -w -p tsconfig.json",
     "build:release": "npm run clean && tsc -p tsconfig.release.json",
     "lint": "eslint . --ignore-pattern 'docs/*' ",
