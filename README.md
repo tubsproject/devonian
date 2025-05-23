@@ -9,35 +9,44 @@ Inspired by [the Cambria Project](https://github.com/inkandswitch/cambria-projec
 *Identifier Maps are the Vector Clocks of Data Portability.*
 
 ## How it works
-The core is in DevonianLens which is very simple: it links corresponding database tables on different systems of record (e.g. bridging a Slack channel with a Matrix room, copying over messages from one to the other), and calls a 'left to right' translation function when a change happens on the left, then add the result on the right. So far only additions have been implemented; updates and deletions coming soon:
+The core is in DevonianLens which is very simple: it links corresponding database tables on different systems of record (e.g. bridging a Slack channel with a Matrix room, copying over messages from one to the other), and calls a 'left to right' translation function when a change happens on the left, then add the result on the right. So far only additions have been implemented; updates and deletions coming soon. Here is an implementation of the []'Extract Entity' challenge](https://arxiv.org/pdf/2309.11406):
 ```ts
-export class DevonianLens<
-  LeftModelWithoutId extends DevonianModel,
-  RightModelWithoutId extends DevonianModel,
-  LeftModel extends LeftModelWithoutId,
-  RightModel extends RightModelWithoutId,
-> {
-  left: DevonianTable<LeftModelWithoutId, LeftModel>;
-  right: DevonianTable<RightModelWithoutId, RightModel>;
-  constructor(
-    left: DevonianTable<LeftModelWithoutId, LeftModel>,
-    right: DevonianTable<RightModelWithoutId, RightModel>,
-    leftToRight: (input: LeftModel) => Promise<RightModel>,
-    rightToLeft: (input: RightModel) => Promise<LeftModel>,
-  ) {
-    this.left = left;
-    this.right = right;
-    left.on('add-from-client', async (added: LeftModel) => {
-      // console.log('lens forwards addition event from left to right');
-      right.addFromLens(await leftToRight(added));
-    });
-    right.on('add-from-client', async (added: RightModel) => {
-      // console.log('lens forwards addition event from right to left');
-      left.addFromLens(await rightToLeft(added));
-    });
-  }
-}
-```
+new DevonianLens<AcmeOrderWithoutId, AcmeLinkedOrderWithoutId, AcmeOrder, AcmeLinkedOrder>(
+  this.acmeOrderTable,
+  this.acmeLinkedOrderTable,
+  async (input: AcmeOrder): Promise<AcmeLinkedOrder> => {
+    const customerId = await this.acmeCustomerTable.getPlatformId({
+      name: input.customerName,
+      address: input.customerAddress,
+      foreignIds: {},
+    }, true);
+    const linkedId = this.index.convert('order', 'comprehensive', input.id.toString(), 'linked');
+    const ret = {
+      id: linkedId as number,
+      item: input.item,
+      quantity: input.quantity,
+      shipDate: input.shipDate,
+      customerId: customerId as number,
+      foreignIds: this.index.convertForeignIds('comprehensive', input.id.toString(), input.foreignIds, 'linked'),
+    };
+    return ret;
+  },
+  async (input: AcmeLinkedOrder): Promise<AcmeOrder> => {
+    const comprehensiveId = this.index.convert('order', 'linked', input.id.toString(), 'comprehensive');
+    const customer = await this.acmeCustomerTable.getRow(input.customerId);
+    const ret = {
+      id: comprehensiveId as number,
+      item: input.item,
+      quantity: input.quantity,
+      shipDate: input.shipDate,
+      customerName: customer.name,
+      customerAddress: customer.address,
+      foreignIds: this.index.convertForeignIds('linked', input.id.toString(), input.foreignIds, 'linked'),
+    };
+    return ret;
+  },
+);
+  ```
 
 Apart from the translation of differently named JSON fields, when copying a message from Slack to Matrix, it will be assigned a newly minted primary key on Matrix, and the bridge needs to keep track of which Slack message ID corresponds to which Matrix message ID.
 The `DevonianIndex` class keeps track of different identifiers an object may have on different platforms, and generates a `ForeignIds` object for each platform. If a platform API offers a place for storing custom metadata, the `ForeignIds` object can be stored there.

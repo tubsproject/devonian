@@ -58,24 +58,22 @@ export class ExtractEntityBridge {
           address: input.customerAddress,
           foreignIds: {},
         }, true);
-        // console.log("Found customerId", customerId, input.customerName, input.customerAddress);
         const linkedId = this.index.convert('order', 'comprehensive', input.id.toString(), 'linked');
         const ret = {
-          id: (typeof linkedId === 'string' ? parseInt(linkedId) : undefined),
+          id: linkedId as number,
           item: input.item,
           quantity: input.quantity,
           shipDate: input.shipDate,
           customerId: customerId as number,
           foreignIds: this.index.convertForeignIds('comprehensive', input.id.toString(), input.foreignIds, 'linked'),
         };
-        // console.log('converting from comprehensive to linked', input, ret);
         return ret;
       },
       async (input: AcmeLinkedOrder): Promise<AcmeOrder> => {
         const comprehensiveId = this.index.convert('order', 'linked', input.id.toString(), 'comprehensive');
         const customer = await this.acmeCustomerTable.getRow(input.customerId);
         const ret = {
-          id: (typeof comprehensiveId === 'string' ? parseInt(comprehensiveId) : undefined),
+          id: comprehensiveId as number,
           item: input.item,
           quantity: input.quantity,
           shipDate: input.shipDate,
@@ -83,7 +81,6 @@ export class ExtractEntityBridge {
           customerAddress: customer.address,
           foreignIds: this.index.convertForeignIds('linked', input.id.toString(), input.foreignIds, 'linked'),
         };
-        // console.log('converting from linked to comprehensive', input, ret);
         return ret;
       },
     );
