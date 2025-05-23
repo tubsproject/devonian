@@ -178,16 +178,17 @@ describe('ExtractEntity', () => {
       foreignIds: {},
     });
     await new Promise(resolve => setTimeout(resolve, 0));
-    // expect(acmeOrderMockClient.added).toEqual([{
-    //   id: undefined,
-    //   item: 'Anvil',
-    //   quantity: 1,
-    //   shipDate: new Date('2023-02-03T00:00:00Z'),
-    //   customerName: 'Wile E Coyote',
-    //   customerAddress: '123 Desert Station',
-    //   foreignIds: {
-    //     linked: '0',
-    //   },
-    // }]);
+    expect(acmeOrderMockClient.added).toEqual([{
+      id: undefined,
+      item: 'Anvil',
+      quantity: 1,
+      shipDate: new Date('2023-02-03T00:00:00Z'),
+      customerName: 'Wile E Coyote',
+      customerAddress: '123 Desert Station',
+      foreignIds: {
+        linked: '0',
+        "devonian-devonian-test-instance": 3,
+      },
+    }]);
   });
 }); 
