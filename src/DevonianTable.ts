@@ -14,13 +14,16 @@ interface Storage<ModelWithoutId extends DevonianModel> {
   getRows(): Promise<ModelWithoutId[]>;
 }
 
-class InMemory<ModelWithoutId extends DevonianModel> implements Storage<ModelWithoutId> {
+export class InMemory<ModelWithoutId extends DevonianModel> implements Storage<ModelWithoutId> {
   private rows: ModelWithoutId[] = [];
   private storageId: string;
   constructor(storageId: string) {
     this.storageId = storageId;
   }
   private rowMatches(i: number, where: object): boolean {
+    if (typeof this.rows[i] === 'undefined') {
+      return false;
+    }
     for (let j = 0; j < Object.keys(where).length; j++) {
       const whereField = Object.keys(where)[j];
       if (this.rows[i][whereField] !== where[whereField]) {
@@ -31,6 +34,9 @@ class InMemory<ModelWithoutId extends DevonianModel> implements Storage<ModelWit
     return true;
   }
   private rowMatchesId(i: number, platform: string, id: string | number): boolean {
+    if (typeof this.rows[i] === 'undefined') {
+      return false;
+    }
     return (this.rows[i].foreignIds[platform] === id);
   }
   private findWhere(where: object): number | undefined {
@@ -49,6 +55,10 @@ class InMemory<ModelWithoutId extends DevonianModel> implements Storage<ModelWit
       return (typeof id === 'string' ? parseInt(id) : id);
     }
     console.log('findById non-native', platform, id, this.rows);
+    // FIXME: this is inefficient if the array is very sparse 
+    // I could use for .. in but that makes i a string instead of a number
+    // see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Indexed_collections#sparse_arrays
+    // and https://stackoverflow.com/a/54847594/680454
     for (let i = 0; i < this.rows.length; i++) {
       if (this.rowMatchesId(i, platform, id)) {
         console.log(`Row ${i} non-native match`);
@@ -132,7 +142,7 @@ export class DevonianTable<ModelWithoutId extends DevonianModel, Model extends M
   }
   async addFromLens(obj: ModelWithoutId): Promise<number> {
     console.log('upserting', obj);
-    const position = await this.storage.upsert(obj); FIXME: THis is returning 2 instead of 0 for the second time Wile E Coyote
+    const position = await this.storage.upsert(obj); // FIXME: THis is returning 2 instead of 0 for the second time Wile E Coyote
     console.log({ position }, obj.foreignIds, this.platform);
     if (typeof obj.foreignIds[this.platform] === 'undefined') {
       console.log('maybe minting', this.minting, position);
