@@ -11,19 +11,29 @@ Inspired by [the Cambria Project](https://github.com/inkandswitch/cambria-projec
 ## How it works
 The core is in DevonianLens which is very simple: it links corresponding database tables on different systems of record (e.g. bridging a Slack channel with a Matrix room, copying over messages from one to the other), and calls a 'left to right' translation function when a change happens on the left, then add the result on the right. So far only additions have been implemented; updates and deletions coming soon:
 ```ts
-export class DevonianLens<LeftModel, RightModel> {
-  left: DevonianTable<LeftModel>;
-  right: DevonianTable<RightModel>;
-  constructor(left: DevonianTable<LeftModel>, right: DevonianTable<RightModel>, leftToRight: (input: LeftModel) => RightModel, rightToLeft: (input: RightModel) => LeftModel) {
+export class DevonianLens<
+  LeftModelWithoutId extends DevonianModel,
+  RightModelWithoutId extends DevonianModel,
+  LeftModel extends LeftModelWithoutId,
+  RightModel extends RightModelWithoutId,
+> {
+  left: DevonianTable<LeftModelWithoutId, LeftModel>;
+  right: DevonianTable<RightModelWithoutId, RightModel>;
+  constructor(
+    left: DevonianTable<LeftModelWithoutId, LeftModel>,
+    right: DevonianTable<RightModelWithoutId, RightModel>,
+    leftToRight: (input: LeftModel) => Promise<RightModel>,
+    rightToLeft: (input: RightModel) => Promise<LeftModel>,
+  ) {
     this.left = left;
     this.right = right;
-    left.on('add-from-client', (added: LeftModel) => {
+    left.on('add-from-client', async (added: LeftModel) => {
       // console.log('lens forwards addition event from left to right');
-      right.addFromLens(leftToRight(added));
+      right.addFromLens(await leftToRight(added));
     });
-    right.on('add-from-client', (added: RightModel) => {
+    right.on('add-from-client', async (added: RightModel) => {
       // console.log('lens forwards addition event from right to left');
-      left.addFromLens(rightToLeft(added));
+      left.addFromLens(await rightToLeft(added));
     });
   }
 }
