@@ -79,7 +79,7 @@ export class ExtractEntityBridge {
           shipDate: input.shipDate,
           customerName: customer.name,
           customerAddress: customer.address,
-          foreignIds: this.index.convertForeignIds('linked', input.id.toString(), input.foreignIds, 'linked'),
+          foreignIds: this.index.convertForeignIds('linked', input.id.toString(), input.foreignIds, 'comprehensive'),
         };
         return ret;
       },

@@ -11,7 +11,12 @@ Inspired by [the Cambria Project](https://github.com/inkandswitch/cambria-projec
 ## How it works
 The core is in DevonianLens which is very simple: it links corresponding database tables on different systems of record (e.g. bridging a Slack channel with a Matrix room, copying over messages from one to the other), and calls a 'left to right' translation function when a change happens on the left, then add the result on the right. So far only additions have been implemented; updates and deletions coming soon. Here is an implementation of the ['Extract Entity' challenge](https://arxiv.org/pdf/2309.11406):
 ```ts
-new DevonianLens<AcmeOrderWithoutId, AcmeLinkedOrderWithoutId, AcmeOrder, AcmeLinkedOrder>(
+new DevonianLens<
+  AcmeOrderWithoutId,
+  AcmeLinkedOrderWithoutId,
+  AcmeOrder,
+  AcmeLinkedOrde
+>(
   this.acmeOrderTable,
   this.acmeLinkedOrderTable,
   async (input: AcmeOrder): Promise<AcmeLinkedOrder> => {
@@ -20,19 +25,34 @@ new DevonianLens<AcmeOrderWithoutId, AcmeLinkedOrderWithoutId, AcmeOrder, AcmeLi
       address: input.customerAddress,
       foreignIds: {},
     }, true);
-    const linkedId = this.index.convertId('order', 'comprehensive', input.id.toString(), 'linked');
+    const linkedId = this.index.convertId(
+      'order',
+      'comprehensive',
+      input.id.toString(),
+      'linked'
+    );
     const ret = {
       id: linkedId as number,
       item: input.item,
       quantity: input.quantity,
       shipDate: input.shipDate,
       customerId: customerId as number,
-      foreignIds: this.index.convertForeignIds('comprehensive', input.id.toString(), input.foreignIds, 'linked'),
+      foreignIds: this.index.convertForeignIds(
+        'comprehensive',
+        input.id.toString(),
+        input.foreignIds,
+        'linked'
+      ),
     };
     return ret;
   },
   async (input: AcmeLinkedOrder): Promise<AcmeOrder> => {
-    const comprehensiveId = this.index.convertId('order', 'linked', input.id.toString(), 'comprehensive');
+    const comprehensiveId = this.index.convertId(
+      'order',
+      'linked',
+      input.id.toString(),
+      'comprehensive'
+    );
     const customer = await this.acmeCustomerTable.getRow(input.customerId);
     const ret = {
       id: comprehensiveId as number,
@@ -41,7 +61,12 @@ new DevonianLens<AcmeOrderWithoutId, AcmeLinkedOrderWithoutId, AcmeOrder, AcmeLi
       shipDate: input.shipDate,
       customerName: customer.name,
       customerAddress: customer.address,
-      foreignIds: this.index.convertForeignIds('linked', input.id.toString(), input.foreignIds, 'linked'),
+      foreignIds: this.index.convertForeignIds(
+        'linked',
+        input.id.toString(),
+        input.foreignIds,
+        'comprehensive'
+      ),
     };
     return ret;
   },
