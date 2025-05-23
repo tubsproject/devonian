@@ -1,4 +1,3 @@
-
 import { DevonianModel } from './DevonianModel.js';
 import { IdentifierMap } from './IdentifierMap.js';
 
@@ -10,7 +9,9 @@ export interface Storage<ModelWithoutId extends DevonianModel> {
   getRows(): Promise<ModelWithoutId[]>;
 }
 
-export class InMemory<ModelWithoutId extends DevonianModel> implements Storage<ModelWithoutId> {
+export class InMemory<ModelWithoutId extends DevonianModel>
+  implements Storage<ModelWithoutId>
+{
   private rows: ModelWithoutId[] = [];
   private storageId: string;
   private semaphore: Promise<void>;
@@ -32,11 +33,15 @@ export class InMemory<ModelWithoutId extends DevonianModel> implements Storage<M
     }
     return true;
   }
-  private rowMatchesId(i: number, platform: string, id: string | number): boolean {
+  private rowMatchesId(
+    i: number,
+    platform: string,
+    id: string | number,
+  ): boolean {
     if (typeof this.rows[i] === 'undefined') {
       return false;
     }
-    return (this.rows[i].foreignIds[platform] === id);
+    return this.rows[i].foreignIds[platform] === id;
   }
   private findWhere(where: object): number | undefined {
     // console.log('findWhere', where, this.rows);
@@ -51,10 +56,10 @@ export class InMemory<ModelWithoutId extends DevonianModel> implements Storage<M
   private findById(platform: string, id: string | number): number | undefined {
     if (platform === this.storageId) {
       // console.log(`Identity ${platform}:${id} is native`);
-      return (typeof id === 'string' ? parseInt(id) : id);
+      return typeof id === 'string' ? parseInt(id) : id;
     }
     // console.log('findById non-native', platform, id, this.rows);
-    // FIXME: this is inefficient if the array is very sparse 
+    // FIXME: this is inefficient if the array is very sparse
     // I could use for .. in but that makes i a string instead of a number
     // see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Indexed_collections#sparse_arrays
     // and https://stackoverflow.com/a/54847594/680454
@@ -118,12 +123,11 @@ export class InMemory<ModelWithoutId extends DevonianModel> implements Storage<M
     }
     const promise = this.doUpsert(obj);
     this.semaphore = promise.then((): void => {
-        delete this.semaphore;
+      delete this.semaphore;
     });
     return promise;
   }
   async getRows(): Promise<ModelWithoutId[]> {
     return this.rows;
   }
-
 }

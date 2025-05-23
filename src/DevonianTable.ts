@@ -8,9 +8,12 @@ export type DevonianTableOptions<ModelWithoutId, Model> = {
   idFieldName: string;
   platform: string;
   replicaId: string;
-}
+};
 
-export class DevonianTable<ModelWithoutId extends DevonianModel, Model extends ModelWithoutId> extends EventEmitter {
+export class DevonianTable<
+  ModelWithoutId extends DevonianModel,
+  Model extends ModelWithoutId,
+> extends EventEmitter {
   private storage: Storage<ModelWithoutId>;
   private client: DevonianClient<ModelWithoutId, Model>;
   private idFieldName: string;
@@ -48,7 +51,9 @@ export class DevonianTable<ModelWithoutId extends DevonianModel, Model extends M
         obj = await this.minting[position];
         // console.log(`minting finished! Moving ${this.idFieldName} into foreignIds`, obj, typeof obj[this.idFieldName], (typeof obj[this.idFieldName] === 'undefined'));
         if (typeof obj[this.idFieldName] === 'undefined') {
-          throw new Error(`client did not assign a value to the platform id field "${this.idFieldName}"`);
+          throw new Error(
+            `client did not assign a value to the platform id field "${this.idFieldName}"`,
+          );
         }
         obj.foreignIds[this.platform] = obj[this.idFieldName];
         delete obj[this.idFieldName];
@@ -70,9 +75,14 @@ export class DevonianTable<ModelWithoutId extends DevonianModel, Model extends M
     return this.storage.get(position);
   }
 
-  async getPlatformId(where: ModelWithoutId, addIfMissing: boolean = false): Promise<string | number | undefined > {
+  async getPlatformId(
+    where: ModelWithoutId,
+    addIfMissing: boolean = false,
+  ): Promise<string | number | undefined> {
     // console.log('getPlatformId', where, addIfMissing);
-    const position = await (addIfMissing ? this.addFromLens(where) : this.storage.findObject(where));
+    const position = await (addIfMissing
+      ? this.addFromLens(where)
+      : this.storage.findObject(where));
     // console.log('back in getPlatformId', position, typeof this.minting[position], await this.storage.get(position));
     if (typeof position === 'undefined') {
       return undefined;
@@ -80,7 +90,7 @@ export class DevonianTable<ModelWithoutId extends DevonianModel, Model extends M
     if (typeof this.minting[position] !== 'undefined') {
       // console.log('oh, that position is minting!');
       return this.minting[position].then((obj: Model) => {
-      // console.log('oh, that position is done minting!', obj, this.platform);
+        // console.log('oh, that position is done minting!', obj, this.platform);
         return obj.foreignIds[this.platform];
       });
     }
