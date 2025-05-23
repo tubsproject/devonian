@@ -16,8 +16,9 @@ export type SlackMessage = SlackMessageWithoutId & {
 
 export class SlackMessageClient extends DevonianClient<SlackMessageWithoutId, SlackMessage> {
   async add(obj: SlackMessageWithoutId): Promise<SlackMessage> {
+    const ret = Object.assign({ ts: 'ts' }, obj);
     console.log('make an API call to post this message to Slack', obj);
-    return Object.assign(obj, { ts: 'ts' });
+    return ret;
   }
 }
     

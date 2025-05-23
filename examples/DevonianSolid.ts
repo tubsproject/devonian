@@ -16,7 +16,8 @@ export type SolidMessage = SolidMessageWithoutId & {
 
 export class SolidMessageClient extends DevonianClient<SolidMessageWithoutId, SolidMessage> {
   async add(obj: SolidMessageWithoutId): Promise<SolidMessage> {
-    console.log('make an API call', obj);
-    return Object.assign(obj, { uri: 'uri' });
+    const ret = Object.assign({ uri: 'uri' }, obj);
+    console.log('make an API call to post this message to Solid', obj, ret);
+    return ret;
   }
 }

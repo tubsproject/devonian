@@ -12,7 +12,7 @@ describe('ExtractEntity', () => {
   const bridge = new ExtractEntityBridge(index, acmeOrderMockClient, acmeCustomerMockClient, acmeLinkedOrderMockClient, replicaId);
   // console.log('Comprehensive is left, Linked is right');
   it('can go from comprehensive to linked', async () => {
-    console.log('fakeIncoming Anvil');
+    // console.log('fakeIncoming Anvil');
     acmeOrderMockClient.fakeIncoming({
       id: 0,
       item: 'Anvil',
@@ -22,7 +22,7 @@ describe('ExtractEntity', () => {
       customerAddress: '123 Desert Station',
       foreignIds: {},
     });
-    console.log('fakeIncoming Dynamite');
+    // console.log('fakeIncoming Dynamite');
     acmeOrderMockClient.fakeIncoming({
       id: 1,
       item: 'Dynamite',
@@ -32,7 +32,7 @@ describe('ExtractEntity', () => {
       customerAddress: 'White Rock Lake',
       foreignIds: {},
     });
-    console.log('fakeIncoming Bird Seed');
+    // console.log('fakeIncoming Bird Seed');
     acmeOrderMockClient.fakeIncoming({
       id: 2,
       item: 'Bird Seed',
@@ -54,7 +54,7 @@ describe('ExtractEntity', () => {
     //   address: 'White Rock Lake',
     // }]);
     expect(acmeLinkedOrderMockClient.added).toEqual([{
-      // id: undefined,
+      id: undefined,
       item: 'Anvil',
       quantity: 1,
       shipDate: new Date('2023-02-03T00:00:00Z'),
@@ -62,11 +62,10 @@ describe('ExtractEntity', () => {
       foreignIds: {
         comprehensive: '0',
         "devonian-devonian-test-instance": 0,
-        "linked": 0,
       },
     },
     {
-      // "id": undefined,
+      "id": undefined,
       "item": "Dynamite",
       "quantity": 1,
       "shipDate": undefined,
@@ -74,11 +73,10 @@ describe('ExtractEntity', () => {
       "foreignIds": {
         "comprehensive": "1",
         "devonian-devonian-test-instance": 1,
-        "linked": 1,
       },
     },
     {
-      // "id": undefined,
+      "id": undefined,
       "item": "Bird Seed",
       "quantity": 1,
       "shipDate": undefined,
@@ -86,10 +84,9 @@ describe('ExtractEntity', () => {
       "foreignIds": {
         "comprehensive": "2", 
         "devonian-devonian-test-instance": 2,
-        "linked": 2,
       },
     }]);
-    expect(bridge.acmeOrderTable.getRows()).toEqual([{
+    expect(await bridge.acmeOrderTable.getRows()).toEqual([{
       "id": 0,
       "item": "Anvil",
       "quantity": 1,
@@ -116,44 +113,55 @@ describe('ExtractEntity', () => {
       "customerAddress": "123 Desert Station",
       "foreignIds": {},
     }]);
-    expect(bridge.acmeCustomerTable.getRows()).toEqual([
+    expect(await bridge.acmeCustomerTable.getRows()).toEqual([
       {
-        "id": "1",
-        "name": "Daffy Duck",
-        "address": "White Rock Lake",
-      },
-      {
-        "id": "0",
         "name": "Wile E Coyote",
         "address": "123 Desert Station",
+        "foreignIds": {
+          "devonian-devonian-test-instance": 0,
+          "linked": 0,
+        },
+      },
+      {
+        "name": "Daffy Duck",
+        "address": "White Rock Lake",
+        "foreignIds": {
+          "devonian-devonian-test-instance": 1,
+          "linked": 1,
+        },
       },
     ]);
-    expect(bridge.acmeLinkedOrderTable.getRows()).toEqual([{
-      "id": "0",
-      "item": "Bird Seed",
-      "quantity": 1,
-      "customerId": 0,
-      "foreignIds": {
-        "comprehensive": "2",
-      },
-    },
-    {
-      "id": "1",
+    expect(await bridge.acmeLinkedOrderTable.getRows()).toEqual([{
       "item": "Anvil",
       "quantity": 1,
       "shipDate": '2023-02-03T00:00:00.000Z',
       "customerId": 0,
       "foreignIds": {
         "comprehensive": "0",
+        "devonian-devonian-test-instance": 0,
+        "linked": 0,
       },
     },
     {
-      "id": "2",
       "item": "Dynamite",
       "quantity": 1,
+      "shipDate": undefined,
       "customerId": 1,
       "foreignIds": {
         "comprehensive": "1",
+        "devonian-devonian-test-instance": 1,
+        "linked": 1,
+      },
+    },
+    {
+      "item": "Bird Seed",
+      "quantity": 1,
+      "shipDate": undefined,
+      "customerId": 0,
+      "foreignIds": {
+        "comprehensive": "2",
+        "devonian-devonian-test-instance": 2,
+        "linked": 2,
       },
     }]);
     expect(index.ids).toEqual({});

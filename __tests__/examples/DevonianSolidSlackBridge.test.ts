@@ -7,8 +7,8 @@ import { MockClient } from '../MockClient.js';
 
 describe('DevonianSolidSlackBridge', () => {
   const index = new DevonianIndex();
-  const solidMockClient = new MockClient<SolidMessageWithoutId, SolidMessage>('solid');
-  const slackMockClient = new MockClient<SlackMessageWithoutId, SlackMessage>('slack');
+  const solidMockClient = new MockClient<SolidMessageWithoutId, SolidMessage>('solid', 'uri');
+  const slackMockClient = new MockClient<SlackMessageWithoutId, SlackMessage>('slack', 'ts');
   new DevonianSolidSlackBridge(index, solidMockClient, slackMockClient);
   // console.log('Solid is left, Slack is right');
   it('can go from Solid to Slack', async () => {
@@ -23,15 +23,12 @@ describe('DevonianSolidSlackBridge', () => {
     });
     await new Promise(resolve => setTimeout(resolve, 0));
     expect(slackMockClient.added).toEqual([{
-      ts: undefined,
       channel: undefined,
-      id: 0,
       text: 'solid text',
       user: undefined,
       foreignIds: {
         asdf: 'qwer',
         'devonian-test-replica': 0,
-        slack: undefined,
         solid: 'https://example.com/chat/2025/05/05/chat.ttl#Msg1'
       }
     }]);
@@ -52,16 +49,13 @@ describe('DevonianSolidSlackBridge', () => {
     await new Promise(resolve => setTimeout(resolve, 0));
     expect(solidMockClient.added).toEqual([{
       chatUri: undefined,
-      id: 0,
       text: 'slack text',
-      uri: undefined,
       authorWebId: undefined,
       date: new Date('2009-02-13T23:31:30.123Z'),
       foreignIds: {
         asdf: 'qwer',
         'devonian-test-replica': 0,
         slack: '1234567890.123',
-        solid: undefined,
       }
     }]);
   });

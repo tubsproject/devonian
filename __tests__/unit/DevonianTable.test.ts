@@ -28,12 +28,11 @@ describe('DevonianTable', () => {
       "bar": "yep",
       "foreignIds": {
         "devonian-inside-unit-tests": 0,
-        "foo": 0,
         "zoo": "5",
       },
     }]);
     const rows = await table.getRows();
-    console.log('ROWS', rows);
+    // console.log('ROWS', rows);
     expect(JSON.stringify(rows, null, 2)).toEqual(JSON.stringify([{
       "bar": "yep",
       "foreignIds": {
@@ -42,7 +41,7 @@ describe('DevonianTable', () => {
         "foo": 0,
       },
     }], null, 2));
-    console.log('FINAL CHECK');
+    // console.log('FINAL CHECK');
     expect(await table.getPlatformId(input)).toEqual(0);
   });
 });

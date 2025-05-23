@@ -13,7 +13,7 @@ export class DevonianSolidSlackBridge {
   constructor(index: DevonianIndex, solidMessageClient: DevonianClient<SolidMessageWithoutId, SolidMessage>, slackMessageClient: DevonianClient<SlackMessageWithoutId, SlackMessage>) {
     this.index = index;
     this.solidMessageTable = new DevonianTable<SolidMessageWithoutId, SolidMessage>({ client: solidMessageClient, idFieldName: 'uri', platform: 'solid', replicaId: 'test-replica' });
-    this.slackMessageTable = new DevonianTable<SlackMessageWithoutId, SlackMessage>({ client: slackMessageClient, idFieldName: 'uri', platform: 'slack', replicaId: 'test-replica' });
+    this.slackMessageTable = new DevonianTable<SlackMessageWithoutId, SlackMessage>({ client: slackMessageClient, idFieldName: 'ts', platform: 'slack', replicaId: 'test-replica' });
     new DevonianLens<SolidMessageWithoutId, SlackMessageWithoutId, SolidMessage, SlackMessage>(
       this.solidMessageTable,
       this.slackMessageTable,
