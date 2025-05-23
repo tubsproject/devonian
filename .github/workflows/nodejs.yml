@@ -13,7 +13,7 @@ jobs:
         with:
           node-version: '20.x'
       - run: pnpm install
-      - run: pnpm run lint --if-present
-      - run: pnpm run prettier:check --if-present
+      - run: pnpm run lint
+      - run: pnpm run prettier:check
       - run: pnpm test
-      - run: pnpm run build --if-present
+      - run: pnpm build
