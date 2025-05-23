@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { InMemory, DevonianModel } from '../../src/DevonianTable.js';
+import { DevonianModel } from '../../src/DevonianModel.js';
+import { InMemory } from '../../src/Storage.js';
 import { AcmeCustomerWithoutId } from '../../examples/ExtractEntity.js';
 
 type ModelWithoutId = DevonianModel & {
@@ -35,12 +36,11 @@ describe('upsert', () => {
       address: 'White Rock Lake',
       foreignIds: { 'devonian-devonian-test-instance': 1 }
     };
-    const position1 = await storage.upsert(wile);
-    expect(position1).toEqual(0);
-    const position2 = await storage.upsert(daffy);
-    expect(position2).toEqual(1);
-    wile.foreignIds = { 'devonian-devonian-test-instance': 0 };
-    const position3 = await storage.upsert(wile);
-    expect(position3).toEqual(0);
+    const positions = await Promise.all([
+      storage.upsert(wile),
+      storage.upsert(daffy),
+       storage.upsert(wile),
+    ]);
+    expect(positions).toEqual([0, 1, 0]);
   });
 });

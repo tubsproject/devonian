@@ -1,6 +1,7 @@
 import { randomBytes } from 'crypto';
 import { DevonianClient } from '../src/DevonianClient.js';
-import { DevonianTable, DevonianModel } from '../src/DevonianTable.js';
+import { DevonianModel } from '../src/DevonianModel.js';
+import { DevonianTable } from '../src/DevonianTable.js';
 import { DevonianLens } from '../src/DevonianLens.js';
 import { DevonianIndex  } from '../src/DevonianIndex.js';
 

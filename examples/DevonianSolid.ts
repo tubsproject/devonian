@@ -1,6 +1,6 @@
 import { DevonianClient } from '../src/DevonianClient.js';
-import { IdentifierMap } from '../src/DevonianIndex.js';
-import { DevonianModel } from '../src/DevonianTable.js';
+import { IdentifierMap } from '../src/IdentifierMap.js';
+import { DevonianModel } from '../src/DevonianModel.js';
 
 export type SolidMessageWithoutId = DevonianModel & {
   chatUri: string,

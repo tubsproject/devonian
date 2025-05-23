@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { DevonianModel, DevonianTable } from '../../src/DevonianTable.js';
+import { DevonianModel } from '../../src/DevonianModel.js';
+import { DevonianTable } from '../../src/DevonianTable.js';
 import { MockClient } from '../MockClient.js';
 
 type FooWithoutId = DevonianModel & {

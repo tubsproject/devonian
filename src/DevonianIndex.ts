@@ -1,6 +1,4 @@
-export type IdentifierMap = {
-  [platform: string]: string | number;
-};
+import { IdentifierMap } from './IdentifierMap.js';
 
 export type Equivalences = {
   [model: string]: IdentifierMap[];
