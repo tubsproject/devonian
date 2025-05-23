@@ -53,7 +53,7 @@ describe('ExtractEntity', () => {
     //   name: 'Daffy Duck',
     //   address: 'White Rock Lake',
     // }]);
-    expect(acmeLinkedOrderMockClient.added.sort((a, b) => a.item.length - b.item.length)).toEqual([{
+    expect(acmeLinkedOrderMockClient.added).toEqual([{
       // id: undefined,
       item: 'Anvil',
       quantity: 1,
