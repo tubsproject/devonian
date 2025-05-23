@@ -1,6 +1,6 @@
 {
   "name": "devonian",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Bidirectional Lenses for Data Portability",
   "type": "module",
   "engines": {
