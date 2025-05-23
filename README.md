@@ -20,7 +20,7 @@ new DevonianLens<AcmeOrderWithoutId, AcmeLinkedOrderWithoutId, AcmeOrder, AcmeLi
       address: input.customerAddress,
       foreignIds: {},
     }, true);
-    const linkedId = this.index.convert('order', 'comprehensive', input.id.toString(), 'linked');
+    const linkedId = this.index.convertId('order', 'comprehensive', input.id.toString(), 'linked');
     const ret = {
       id: linkedId as number,
       item: input.item,
@@ -32,7 +32,7 @@ new DevonianLens<AcmeOrderWithoutId, AcmeLinkedOrderWithoutId, AcmeOrder, AcmeLi
     return ret;
   },
   async (input: AcmeLinkedOrder): Promise<AcmeOrder> => {
-    const comprehensiveId = this.index.convert('order', 'linked', input.id.toString(), 'comprehensive');
+    const comprehensiveId = this.index.convertId('order', 'linked', input.id.toString(), 'comprehensive');
     const customer = await this.acmeCustomerTable.getRow(input.customerId);
     const ret = {
       id: comprehensiveId as number,
@@ -46,7 +46,7 @@ new DevonianLens<AcmeOrderWithoutId, AcmeLinkedOrderWithoutId, AcmeOrder, AcmeLi
     return ret;
   },
 );
-  ```
+```
 
 Apart from the translation of differently named JSON fields, when copying a message from Slack to Matrix, it will be assigned a newly minted primary key on Matrix, and the bridge needs to keep track of which Slack message ID corresponds to which Matrix message ID.
 The `DevonianIndex` class keeps track of different identifiers an object may have on different platforms, and generates a `ForeignIds` object for each platform. If a platform API offers a place for storing custom metadata, the `ForeignIds` object can be stored there.

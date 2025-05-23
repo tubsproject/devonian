@@ -95,7 +95,7 @@ export class DevonianIndex {
     });
   }
 
-  convert(
+  convertId(
     model: string,
     fromPlatform: string,
     fromLocalId: string,

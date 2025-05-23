@@ -19,10 +19,10 @@ export class DevonianSolidSlackBridge {
       this.slackMessageTable,
       async (input: SolidMessage): Promise<SlackMessage> => {
         const ret = {
-          ts: this.index.convert('message', 'solid', input.uri, 'slack') as string,
-          user: this.index.convert('person', 'solid', input.authorWebId, 'slack') as string,
+          ts: this.index.convertId('message', 'solid', input.uri, 'slack') as string,
+          user: this.index.convertId('person', 'solid', input.authorWebId, 'slack') as string,
           text: input.text,
-          channel: this.index.convert('channel', 'solid', input.chatUri, 'slack') as string,
+          channel: this.index.convertId('channel', 'solid', input.chatUri, 'slack') as string,
           foreignIds: this.index.convertForeignIds('solid', input.uri, input.foreignIds, 'slack'),
         };
         // console.log('converting from Solid to Slack', input, ret);
@@ -30,10 +30,10 @@ export class DevonianSolidSlackBridge {
       },
       async (input: SlackMessage): Promise<SolidMessage> => {
         const ret = {
-          uri: this.index.convert('message', 'slack', input.ts, 'solid') as string,
-          chatUri: this.index.convert('channel', 'slack', input.channel, 'solid') as string,
+          uri: this.index.convertId('message', 'slack', input.ts, 'solid') as string,
+          chatUri: this.index.convertId('channel', 'slack', input.channel, 'solid') as string,
           text: input.text,
-          authorWebId: this.index.convert('person', 'slack', input.user, 'solid') as string,
+          authorWebId: this.index.convertId('person', 'slack', input.user, 'solid') as string,
           date: new Date(parseFloat(input.ts) * 1000),
           foreignIds: this.index.convertForeignIds('slack', input.ts, input.foreignIds, 'solid'),
         };

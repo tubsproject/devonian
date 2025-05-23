@@ -58,7 +58,7 @@ export class ExtractEntityBridge {
           address: input.customerAddress,
           foreignIds: {},
         }, true);
-        const linkedId = this.index.convert('order', 'comprehensive', input.id.toString(), 'linked');
+        const linkedId = this.index.convertId('order', 'comprehensive', input.id.toString(), 'linked');
         const ret = {
           id: linkedId as number,
           item: input.item,
@@ -70,7 +70,7 @@ export class ExtractEntityBridge {
         return ret;
       },
       async (input: AcmeLinkedOrder): Promise<AcmeOrder> => {
-        const comprehensiveId = this.index.convert('order', 'linked', input.id.toString(), 'comprehensive');
+        const comprehensiveId = this.index.convertId('order', 'linked', input.id.toString(), 'comprehensive');
         const customer = await this.acmeCustomerTable.getRow(input.customerId);
         const ret = {
           id: comprehensiveId as number,

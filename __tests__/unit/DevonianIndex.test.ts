@@ -55,10 +55,10 @@ describe('DevonianIndex', () => {
         },
       }
     });
-    expect(index.convert('channel', 'solid', 'https://michielbdejong.solidcommunity.net/IndividualChats/nlnet-demo/index.ttl#this', 'slack')).toEqual('C08RHPHV05D');
-    expect(index.convert('channel', 'slack', 'C08RHPHV05D', 'solid')).toEqual('https://michielbdejong.solidcommunity.net/IndividualChats/nlnet-demo/index.ttl#this');
-    expect(index.convert('author', 'solid', 'https://michielbdejong.solidcommunity.net/profile/card#me', 'slack')).toEqual('U0816RHEE85');
-    expect(index.convert('author', 'slack', 'U05TRV6UVPV', 'solid')).toEqual('https://michielbdejong.solidcommunity.net/profile/card#me');
-    expect(index.convert('author', 'slack', 'U0816RHEE85', 'solid')).toEqual('https://michielbdejong.solidcommunity.net/profile/card#me');
+    expect(index.convertId('channel', 'solid', 'https://michielbdejong.solidcommunity.net/IndividualChats/nlnet-demo/index.ttl#this', 'slack')).toEqual('C08RHPHV05D');
+    expect(index.convertId('channel', 'slack', 'C08RHPHV05D', 'solid')).toEqual('https://michielbdejong.solidcommunity.net/IndividualChats/nlnet-demo/index.ttl#this');
+    expect(index.convertId('author', 'solid', 'https://michielbdejong.solidcommunity.net/profile/card#me', 'slack')).toEqual('U0816RHEE85');
+    expect(index.convertId('author', 'slack', 'U05TRV6UVPV', 'solid')).toEqual('https://michielbdejong.solidcommunity.net/profile/card#me');
+    expect(index.convertId('author', 'slack', 'U0816RHEE85', 'solid')).toEqual('https://michielbdejong.solidcommunity.net/profile/card#me');
   });
 });
