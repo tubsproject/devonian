@@ -1,18 +1,24 @@
 import { DevonianClient } from '../src/DevonianClient.js';
-import { ForeignIds } from '../src/DevonianIndex.js';
+import { IdentifierMap } from '../src/IdentifierMap.js';
+import { DevonianModel } from '../src/DevonianModel.js';
 
-export type SlackMessage = {
+export type SlackMessageWithoutId = DevonianModel & {
   ts?: string,
   user?: string,
   channel: string,
   text: string,
-  foreignIds: ForeignIds,
+  foreignIds: IdentifierMap,
 };
 
-export class SlackMessageClient extends DevonianClient<SlackMessage> {
-  async add(obj: SlackMessage): Promise<string> {
+export type SlackMessage = SlackMessageWithoutId & {
+  ts?: string,
+};
+
+export class SlackMessageClient extends DevonianClient<SlackMessageWithoutId, SlackMessage> {
+  async add(obj: SlackMessageWithoutId): Promise<SlackMessage> {
+    const ret = Object.assign({ ts: 'ts' }, obj);
     console.log('make an API call to post this message to Slack', obj);
-    return 'ts';
+    return ret;
   }
 }
     
