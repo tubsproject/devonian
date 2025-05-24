@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { DevonianModel } from '../../src/DevonianModel.js';
 import { DevonianTable } from '../../src/DevonianTable.js';
-import { MockClient } from '../MockClient.js';
+import { MockClient } from '../helpers.js';
 
 type FooWithoutId = DevonianModel & {
   bar: string;

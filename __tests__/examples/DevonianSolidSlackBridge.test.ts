@@ -3,7 +3,7 @@ import { DevonianIndex } from '../../src/DevonianIndex.js';
 import { SolidMessageWithoutId, SolidMessage } from '../../examples/DevonianSolid.js';
 import { SlackMessageWithoutId, SlackMessage } from '../../examples/DevonianSlack.js';
 import { DevonianSolidSlackBridge } from '../../examples/DevonianSolidSlackBridge.js';
-import { MockClient } from '../MockClient.js';
+import { MockClient } from '../helpers.js';
 
 describe('DevonianSolidSlackBridge', () => {
   const index = new DevonianIndex();

@@ -1,4 +1,10 @@
 import { EventEmitter } from 'node:events';
+import { DevonianModel } from '../src/DevonianModel.js';
+
+export type ModelWithoutId = DevonianModel & {
+  foo: string;
+};
+
 export class MockClient<ModelWithoutId, Model> extends EventEmitter {
   added: ModelWithoutId[] = [];
   name: string;

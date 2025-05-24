@@ -1,17 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { DevonianModel } from '../../src/DevonianModel.js';
-import { InMemory } from '../../src/Storage.js';
-import { AcmeCustomerWithoutId } from '../../examples/ExtractEntity.js';
-
-type ModelWithoutId = DevonianModel & {
-  foo: string;
-};
-
-//   findObject(obj: ModelWithoutId): Promise<number | undefined>;
-//   get(position: number): Promise<ModelWithoutId>;
-//   set(position: number, obj: ModelWithoutId): Promise<void>;
-//   upsert(obj: ModelWithoutId): Promise<number>;
-//   getRows(): Promise<ModelWithoutId[]>;
+import { InMemory } from '../../../src/Storage.js';
+import { AcmeCustomerWithoutId } from '../../../examples/ExtractEntity.js';
+import { ModelWithoutId } from '../../helpers.js';
 
 describe('set, get, findObject', () => {
   it('can store rows', async () => {

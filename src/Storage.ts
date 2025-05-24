@@ -131,3 +131,10 @@ export class InMemory<ModelWithoutId extends DevonianModel>
     return this.rows;
   }
 }
+
+export class Automerge<ModelWithoutId extends DevonianModel> extends InMemory<ModelWithoutId> {
+  constructor(storageId: string, docHandle: object) {
+    super(storageId);
+    void docHandle;
+  }
+}

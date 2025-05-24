@@ -1,4 +1,4 @@
-import { MockClient } from '../MockClient.js';
+import { MockClient } from '../helpers.js';
 import { describe, it, expect } from 'vitest';
 import { DevonianIndex } from '../../src/DevonianIndex.js';
 import { AcmeOrderWithoutId, AcmeLinkedOrderWithoutId, AcmeCustomerWithoutId, AcmeOrder, AcmeLinkedOrder, AcmeCustomer, ExtractEntityBridge } from '../../examples/ExtractEntity.js';
