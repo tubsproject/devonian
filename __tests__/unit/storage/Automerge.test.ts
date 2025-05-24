@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { ModelWithoutId } from '../../helpers.js';
-import { Automerge } from '../../../src/Storage.js';
+import { Automerge } from '../../../src/storage/Automerge.js';
 import { AcmeCustomerWithoutId } from '../../../examples/ExtractEntity.js';
 import { Repo } from '@automerge/automerge-repo';
 import { BroadcastChannelNetworkAdapter } from '@automerge/automerge-repo-network-broadcastchannel';

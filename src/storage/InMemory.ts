@@ -1,13 +1,6 @@
-import { DevonianModel } from './DevonianModel.js';
-import { IdentifierMap } from './IdentifierMap.js';
-
-export interface Storage<ModelWithoutId extends DevonianModel> {
-  findObject(obj: ModelWithoutId): Promise<number | undefined>;
-  get(position: number): Promise<ModelWithoutId>;
-  set(position: number, obj: ModelWithoutId): Promise<void>;
-  upsert(obj: ModelWithoutId): Promise<number>;
-  getRows(): Promise<ModelWithoutId[]>;
-}
+import { DevonianModel } from '../DevonianModel.js';
+import { IdentifierMap } from '../IdentifierMap.js';
+import { Storage } from './interface.js';
 
 export class InMemory<ModelWithoutId extends DevonianModel>
   implements Storage<ModelWithoutId>
@@ -129,12 +122,5 @@ export class InMemory<ModelWithoutId extends DevonianModel>
   }
   async getRows(): Promise<ModelWithoutId[]> {
     return this.rows;
-  }
-}
-
-export class Automerge<ModelWithoutId extends DevonianModel> extends InMemory<ModelWithoutId> {
-  constructor(storageId: string, docHandle: object) {
-    super(storageId);
-    void docHandle;
   }
 }

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { InMemory } from '../../../src/Storage.js';
+import { InMemory } from '../../../src/storage/InMemory.js';
 import { AcmeCustomerWithoutId } from '../../../examples/ExtractEntity.js';
 import { ModelWithoutId } from '../../helpers.js';
 
