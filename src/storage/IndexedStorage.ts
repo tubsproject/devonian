@@ -109,31 +109,37 @@ export class IndexedStorage<ModelWithoutId extends DevonianModel>
     // console.log('findObject returns', position);
     return position;
   }
-  async doUpsert(obj: ModelWithoutId): Promise<number> {
+  async doUpsert(obj: ModelWithoutId, fieldsToMerge: string[]): Promise<{ position: number, minted: boolean }> {
     let position = await this.findObject(obj);
+    let minted = false;
     const rows = await this.coreStorage.getRows();
-    console.log('this is where upsert decides', position, rows);
+    console.log('this is where upsert decides', position, rows, fieldsToMerge, obj);
     if (typeof position === 'undefined') {
       position = rows.length;
+      minted = true;
+    }
+    if ((typeof position === 'number') && (typeof rows[position] !== 'undefined')) {
+      fieldsToMerge.forEach((field: string) => {
+        Object.keys(rows[position][field]).forEach((platform: string) => {
+          obj[field][platform] = rows[position][field][platform];
+        });
+      });
     }
     if (JSON.stringify(rows[position]) !== JSON.stringify(obj)) {
-      console.log('UPDATING ROW', position, await this.coreStorage.getRow(position), obj);
+      console.log('UPDATING ROW', position, rows[position], obj);
     }
     console.log('doUpsert awaits setRow start', position, obj);
-    if (((obj as unknown as { name: string}).name === 'Wile E Coyote') && position === 2) {
-      console.error('WHYYYYY');
-    }
     await this.coreStorage.setRow(position, obj);
-    console.log('doUpsert awaits setRow end', position, obj);
-    return position;
+    console.log('doUpsert awaits setRow end', position, minted, obj);
+    return { position, minted };
   }
-  async upsert(obj: ModelWithoutId): Promise<number> {
+  async upsert(obj: ModelWithoutId, fieldsToMerge: string[]): Promise<{ position: number, minted: boolean }> {
     console.log('UPSERT', obj);
     if (typeof this.semaphore !== 'undefined') {
       console.log('awaiting semaphore');
       await this.semaphore;
     }
-    const promise = this.doUpsert(obj);
+    const promise = this.doUpsert(obj, fieldsToMerge );
     this.semaphore = promise.then((): void => {
       delete this.semaphore;
     });

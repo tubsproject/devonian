@@ -28,9 +28,9 @@ describe('upsert', () => {
       foreignIds: { 'devonian-test-instance': 1 }
     };
     const positions = await Promise.all([
-      storage.upsert(wile),
-      storage.upsert(daffy),
-       storage.upsert(wile),
+      storage.upsert(wile, [ 'foreignIds' ]),
+      storage.upsert(daffy, [ 'foreignIds' ]),
+       storage.upsert(wile, [ 'foreignIds' ]),
     ]);
     expect(positions).toEqual([0, 1, 0]);
   });
