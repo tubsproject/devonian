@@ -2,7 +2,7 @@ import { EventEmitter } from 'node:events';
 import { DevonianClient } from './DevonianClient.js';
 import { DevonianModel } from './DevonianModel.js';
 import { Storage } from './storage/interface.js';
-import { InMemory } from './storage/InMemory.js';
+import { IndexedStorage, CoreStorage } from './storage/InMemory.js';
 
 export type DevonianTableOptions<ModelWithoutId, Model> = {
   client: DevonianClient<ModelWithoutId, Model>;
@@ -24,7 +24,7 @@ export class DevonianTable<
   constructor(options: DevonianTableOptions<ModelWithoutId, Model>) {
     super();
     this.replicaId = options.replicaId;
-    this.storage = new InMemory(`devonian-${this.replicaId}`);
+    this.storage = new IndexedStorage<ModelWithoutId>(`devonian-${this.replicaId}`, new CoreStorage<ModelWithoutId>());
     this.client = options.client;
     this.idFieldName = options.idFieldName;
     this.platform = options.platform;
