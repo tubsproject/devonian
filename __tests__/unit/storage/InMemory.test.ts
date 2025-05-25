@@ -28,9 +28,9 @@ describe('upsert', () => {
       foreignIds: { 'devonian-test-instance': 1 }
     };
     const positions = await Promise.all([
-      storage.upsert(wile, [ 'foreignIds' ]),
-      storage.upsert(daffy, [ 'foreignIds' ]),
-       storage.upsert(wile, [ 'foreignIds' ]),
+      storage.ensureRow(wile, [ 'foreignIds' ]),
+      storage.ensureRow(daffy, [ 'foreignIds' ]),
+       storage.ensureRow(wile, [ 'foreignIds' ]),
     ]);
     expect(positions).toEqual([{
       "minted": true,

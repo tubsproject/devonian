@@ -31,14 +31,14 @@ export class DevonianTable<
     this.platform = options.platform;
     this.client.on('add-from-client', async (obj: Model) => {
       // console.log('adding from client, upsert start');
-      await this.storage.upsert(obj, [ 'foreignIds' ]);
+      await this.storage.ensureRow(obj, [ 'foreignIds' ]);
       // console.log('adding from client, upsert finish');
       this.emit('add-from-client', obj);
     });
   }
-  async addFromLens(obj: ModelWithoutId): Promise<number> {
+  async ensureRow(obj: ModelWithoutId): Promise<number> {
     // console.log('addFromLens is upserting', obj);
-    const { position, minted } = await this.storage.upsert(obj, [ 'foreignIds' ]); // FIXME: This is returning 2 instead of 0 for the second time Wile E Coyote
+    const { position, minted } = await this.storage.ensureRow(obj, [ 'foreignIds' ]); // FIXME: This is returning 2 instead of 0 for the second time Wile E Coyote
     // console.log({ position, minted }, obj.foreignIds, this.platform);
     if (minted && typeof obj.foreignIds[this.platform] === 'undefined') {
       // console.log('maybe minting', this.minting, position);
@@ -59,7 +59,7 @@ export class DevonianTable<
         }
         obj.foreignIds[this.platform] = obj[this.idFieldName];
         delete obj[this.idFieldName];
-        await this.storage.upsert(obj as ModelWithoutId, [ 'foreignIds' ]);
+        await this.storage.ensureRow(obj as ModelWithoutId, [ 'foreignIds' ]);
         await new Promise(resolve => setTimeout(resolve, 0));
         // console.log('DELETING THE MINTING SEMAPHORE!', await this.getRows());
         delete this.minting[position];
@@ -85,7 +85,7 @@ export class DevonianTable<
   ): Promise<string | number | undefined> {
     // console.log('getPlatformId', where, addIfMissing);
     const position = await (addIfMissing
-      ? this.addFromLens(where)
+      ? this.ensureRow(where)
       : this.storage.findObject(where));
     // console.log('back in getPlatformId', position, typeof this.minting[position], await this.storage.get(position));
     if (typeof position === 'undefined') {

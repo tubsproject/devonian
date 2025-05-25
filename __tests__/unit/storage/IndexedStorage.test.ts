@@ -8,9 +8,9 @@ describe('upsert', () => {
     const storage = new IndexedStorage<ModelWithoutId>('storage-id', new InMemoryStorage<ModelWithoutId>());
     const foo = { foo: 'bar', foreignIds: {} };
     await Promise.all([
-      storage.upsert(foo, [ 'foreignIds' ]),
-      storage.upsert(foo, [ 'foreignIds' ]),
-      storage.upsert(foo, [ 'foreignIds' ]),
+      storage.ensureRow(foo, [ 'foreignIds' ]),
+      storage.ensureRow(foo, [ 'foreignIds' ]),
+      storage.ensureRow(foo, [ 'foreignIds' ]),
     ]);
     expect(await storage.getRows()).toEqual([ foo ]);
   });

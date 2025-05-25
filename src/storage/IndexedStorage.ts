@@ -133,7 +133,7 @@ export class IndexedStorage<ModelWithoutId extends DevonianModel>
     // console.log('doUpsert awaits setRow end', position, minted, obj);
     return { position, minted };
   }
-  async upsert(obj: ModelWithoutId, fieldsToMerge: string[]): Promise<{ position: number, minted: boolean }> {
+  async ensureRow(obj: ModelWithoutId, fieldsToMerge: string[]): Promise<{ position: number, minted: boolean }> {
     // console.log('UPSERT', obj);
     if (typeof this.semaphore !== 'undefined') {
       // console.log('awaiting semaphore');
