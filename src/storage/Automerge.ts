@@ -12,9 +12,13 @@ export class AutomergeStorage<ModelWithoutId extends DevonianModel>  implements 
     return this.docHandle.docSync()[i];
   }
   async setRow(i: number, row: ModelWithoutId): Promise<void> {
+    console.log('before change', i, row);
     await this.docHandle.change(d => {
+      console.log('change start', i, row);
       d[i] = row;
+      console.log('change done', i, row);
     });
+    console.log('after change', i, row);
   }
   getRows(): readonly ModelWithoutId[] {
     return this.docHandle.docSync();
