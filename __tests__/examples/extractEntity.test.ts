@@ -4,7 +4,7 @@ import { DevonianIndex } from '../../src/DevonianIndex.js';
 import { AcmeOrderWithoutId, AcmeLinkedOrderWithoutId, AcmeCustomerWithoutId, AcmeOrder, AcmeLinkedOrder, AcmeCustomer, ExtractEntityBridge } from '../../examples/ExtractEntity.js';
 
 describe('ExtractEntity', () => {
-  const replicaId = `devonian-test-instance`;
+  const replicaId = `test-instance`;
   const index = new DevonianIndex();
   const acmeOrderMockClient = new MockClient<AcmeOrderWithoutId, AcmeOrder>('orders');
   const acmeCustomerMockClient = new MockClient<AcmeCustomerWithoutId, AcmeCustomer>('customers');
@@ -61,7 +61,7 @@ describe('ExtractEntity', () => {
       customerId: 0,
       foreignIds: {
         comprehensive: '0',
-        "devonian-devonian-test-instance": 0,
+        "devonian-test-instance": 0,
       },
     },
     {
@@ -72,7 +72,7 @@ describe('ExtractEntity', () => {
       "customerId": 1,
       "foreignIds": {
         "comprehensive": "1",
-        "devonian-devonian-test-instance": 1,
+        "devonian-test-instance": 1,
       },
     },
     {
@@ -83,7 +83,7 @@ describe('ExtractEntity', () => {
       "customerId": 0,
       "foreignIds": {
         "comprehensive": "2", 
-        "devonian-devonian-test-instance": 2,
+        "devonian-test-instance": 2,
       },
     }]);
     expect(await bridge.acmeOrderTable.getRows()).toEqual([{
@@ -118,7 +118,7 @@ describe('ExtractEntity', () => {
         "name": "Wile E Coyote",
         "address": "123 Desert Station",
         "foreignIds": {
-          "devonian-devonian-test-instance": 0,
+          "devonian-test-instance": 0,
           "linked": 0,
         },
       },
@@ -126,7 +126,7 @@ describe('ExtractEntity', () => {
         "name": "Daffy Duck",
         "address": "White Rock Lake",
         "foreignIds": {
-          "devonian-devonian-test-instance": 1,
+          "devonian-test-instance": 1,
           "linked": 1,
         },
       },
@@ -138,7 +138,7 @@ describe('ExtractEntity', () => {
       "customerId": 0,
       "foreignIds": {
         "comprehensive": "0",
-        "devonian-devonian-test-instance": 0,
+        "devonian-test-instance": 0,
         "linked": 0,
       },
     },
@@ -149,7 +149,7 @@ describe('ExtractEntity', () => {
       "customerId": 1,
       "foreignIds": {
         "comprehensive": "1",
-        "devonian-devonian-test-instance": 1,
+        "devonian-test-instance": 1,
         "linked": 1,
       },
     },
@@ -160,7 +160,7 @@ describe('ExtractEntity', () => {
       "customerId": 0,
       "foreignIds": {
         "comprehensive": "2",
-        "devonian-devonian-test-instance": 2,
+        "devonian-test-instance": 2,
         "linked": 2,
       },
     }]);
@@ -187,7 +187,7 @@ describe('ExtractEntity', () => {
       customerAddress: '123 Desert Station',
       foreignIds: {
         linked: '0',
-        "devonian-devonian-test-instance": 3,
+        "devonian-test-instance": 3,
       },
     }]);
   });

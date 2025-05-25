@@ -37,9 +37,9 @@ export class DevonianTable<
     });
   }
   async addFromLens(obj: ModelWithoutId): Promise<number> {
-    // console.log('upserting', obj);
-    const position = await this.storage.upsert(obj); // FIXME: THis is returning 2 instead of 0 for the second time Wile E Coyote
-    // console.log({ position }, obj.foreignIds, this.platform);
+    console.log('upserting', obj);
+    const position = await this.storage.upsert(obj); // FIXME: This is returning 2 instead of 0 for the second time Wile E Coyote
+    console.log({ position }, obj.foreignIds, this.platform);
     if (typeof obj.foreignIds[this.platform] === 'undefined') {
       // console.log('maybe minting', this.minting, position);
       if (typeof position === 'undefined') {
@@ -85,20 +85,20 @@ export class DevonianTable<
     const position = await (addIfMissing
       ? this.addFromLens(where)
       : this.storage.findObject(where));
-    // console.log('back in getPlatformId', position, typeof this.minting[position], await this.storage.get(position));
+    console.log('back in getPlatformId', position, typeof this.minting[position], await this.storage.get(position));
     if (typeof position === 'undefined') {
       return undefined;
     }
     if (typeof this.minting[position] !== 'undefined') {
-      // console.log('oh, that position is minting!');
+      console.log('oh, that position is minting!');
       return this.minting[position].then((obj: Model) => {
-        // console.log('oh, that position is done minting!', obj, this.platform);
+        console.log('oh, that position is done minting!', obj, this.platform);
         return obj.foreignIds[this.platform];
       });
     }
-    // console.log('calling storage get', position);
+    console.log('calling storage get', position);
     const obj = await this.storage.get(position);
-    // console.log('getting platform id from object', obj, this.platform);
+    console.log('getting platform id from object', obj, this.platform);
     // if (typeof obj.foreignIds[this.platform] === 'undefined') {
     //     console.log('really minting');
     //     this.minting[position] = this.client.add(obj as ModelWithoutId);

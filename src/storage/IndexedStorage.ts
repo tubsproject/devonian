@@ -19,15 +19,15 @@ export class IndexedStorage<ModelWithoutId extends DevonianModel>
     this.coreStorage = coreStorage;
   }
   private rowMatches(where: object, row: ModelWithoutId): boolean {
-    console.log('here we go - rowMatches', where, row);
+    // console.log('here we go - rowMatches', where, row);
     if (typeof row === 'undefined') {
-      console.log('returning false for undefined row!');
+      // console.log('returning false for undefined row!');
       return false;
     }
     for (let j = 0; j < Object.keys(where).length; j++) {
       const whereField = Object.keys(where)[j];
       if (row[whereField] !== where[whereField]) {
-        console.log(`Row mismatch on ${whereField}`);
+        // console.log(`Row mismatch on ${whereField}`);
         return false;
       }
     }
@@ -45,8 +45,8 @@ export class IndexedStorage<ModelWithoutId extends DevonianModel>
   }
   private async findWhere(where: object): Promise<number | undefined> {
     const rows = await this.coreStorage.getRows();
-    console.log('findWhere', where, rows);
-    console.log('searching rows', rows);
+    // console.log('findWhere', where, rows);
+    // console.log('searching rows', rows);
     for (let i = 0; i < rows.length; i++) {
       if (this.rowMatches(where, rows[i])) {
         console.log(`Row ${i} match`);
@@ -96,33 +96,41 @@ export class IndexedStorage<ModelWithoutId extends DevonianModel>
     this.coreStorage.setRow(position, obj);
   }
   async findObject(obj: ModelWithoutId): Promise<number | undefined> {
-    console.log('findObject calls findByIdMap');
+    // console.log('findObject calls findByIdMap');
     let position = await this.findByIdMap(obj.foreignIds);
-    console.log('back in findObject', position, typeof position);
+    // console.log('back in findObject', position, typeof position);
     if (typeof position === 'undefined') {
       const where = JSON.parse(JSON.stringify(obj));
       delete where.foreignIds;
-      console.log('findObject calls findWhere', where);
+      // console.log('findObject calls findWhere', where);
       position = await this.findWhere(where);
+      // console.log('findWhere returned', position);
     }
+    // console.log('findObject returns', position);
     return position;
   }
   async doUpsert(obj: ModelWithoutId): Promise<number> {
     let position = await this.findObject(obj);
     const rows = await this.coreStorage.getRows();
-    // console.log('this is where upsert decides', position, this.rows);
+    console.log('this is where upsert decides', position, rows);
     if (typeof position === 'undefined') {
       position = rows.length;
     }
-    if (JSON.stringify(this.coreStorage.getRow(position)) !== JSON.stringify(obj)) {
-      // console.log('UPDATING ROW', position, this.coreStorage.getRow(position), obj);
+    if (JSON.stringify(rows[position]) !== JSON.stringify(obj)) {
+      console.log('UPDATING ROW', position, await this.coreStorage.getRow(position), obj);
+    }
+    console.log('doUpsert awaits setRow start', position, obj);
+    if (((obj as unknown as { name: string}).name === 'Wile E Coyote') && position === 2) {
+      console.error('WHYYYYY');
     }
     await this.coreStorage.setRow(position, obj);
+    console.log('doUpsert awaits setRow end', position, obj);
     return position;
   }
   async upsert(obj: ModelWithoutId): Promise<number> {
-    // console.log('UPSERT', obj);
+    console.log('UPSERT', obj);
     if (typeof this.semaphore !== 'undefined') {
+      console.log('awaiting semaphore');
       await this.semaphore;
     }
     const promise = this.doUpsert(obj);

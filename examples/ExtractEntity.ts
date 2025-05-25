@@ -58,6 +58,9 @@ export class ExtractEntityBridge {
           address: input.customerAddress,
           foreignIds: {},
         }, true);
+        if (customerId === 2) {
+         console.error('NOOOOOOOOOOOO!');
+        }
         const linkedId = this.index.convertId('order', 'comprehensive', input.id.toString(), 'linked');
         const ret = {
           id: linkedId as number,

@@ -25,7 +25,7 @@ describe('upsert', () => {
     const daffy = {
       name: 'Daffy Duck',
       address: 'White Rock Lake',
-      foreignIds: { 'devonian-devonian-test-instance': 1 }
+      foreignIds: { 'devonian-test-instance': 1 }
     };
     const positions = await Promise.all([
       storage.upsert(wile),
