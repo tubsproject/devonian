@@ -2,7 +2,8 @@ import { EventEmitter } from 'node:events';
 import { DevonianClient } from './DevonianClient.js';
 import { DevonianModel } from './DevonianModel.js';
 import { Storage } from './storage/interface.js';
-import { IndexedStorage, InMemoryStorage } from './storage/InMemory.js';
+import { IndexedStorage } from './storage/IndexedStorage.js';
+import { InMemoryStorage } from './storage/InMemory.js';
 
 export type DevonianTableOptions<ModelWithoutId, Model> = {
   client: DevonianClient<ModelWithoutId, Model>;
@@ -69,7 +70,7 @@ export class DevonianTable<
     // console.log('return');
     return position;
   }
-  async getRows(): Promise<ModelWithoutId[]> {
+  async getRows(): Promise<readonly ModelWithoutId[]> {
     return this.storage.getRows();
   }
   async getRow(position: number): Promise<ModelWithoutId> {

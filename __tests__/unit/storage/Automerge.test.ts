@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { ModelWithoutId } from '../../helpers.js';
-import { Automerge } from '../../../src/storage/Automerge.js';
+import { AutomergeStorage } from '../../../src/storage/Automerge.js';
+import { IndexedStorage } from '../../../src/storage/IndexedStorage.js';
 import { AcmeCustomerWithoutId } from '../../../examples/ExtractEntity.js';
 import { Repo } from '@automerge/automerge-repo';
 import { BroadcastChannelNetworkAdapter } from '@automerge/automerge-repo-network-broadcastchannel';
@@ -25,8 +26,8 @@ describe('set, get, findObject', () => {
     network: [new BroadcastChannelNetworkAdapter()],
     storage: new NodeFSStorageAdapter('./data'),
   });
-  const docHandle = repo.create();
-  const storage = new Automerge<ModelWithoutId>('storage-id', docHandle);
+  const docHandle = repo.create<ModelWithoutId[]>();
+  const storage = new IndexedStorage<ModelWithoutId>('storage-id', new AutomergeStorage<ModelWithoutId>(docHandle));
 
   it('can store rows', async () => {
     const foo = { foo: 'bar', foreignIds: {} };
@@ -42,8 +43,8 @@ describe('upsert', () => {
       network: [new BroadcastChannelNetworkAdapter()],
       storage: new NodeFSStorageAdapter('./data'),
     });
-    const docHandle = repo.create();
-    const storage = new Automerge<AcmeCustomerWithoutId>('storage-id', docHandle);
+    const docHandle = repo.create<AcmeCustomerWithoutId[]>();
+    const storage = new IndexedStorage<AcmeCustomerWithoutId>('storage-id', new AutomergeStorage<AcmeCustomerWithoutId>(docHandle));
     const wile = {
       name: 'Wile E Coyote',
       address: '123 Desert Station',

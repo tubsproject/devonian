@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { IndexedStorage, InMemoryStorage } from '../../../src/storage/InMemory.js';
+import { IndexedStorage } from '../../../src/storage/IndexedStorage.js';
+import { InMemoryStorage } from '../../../src/storage/InMemory.js';
 import { AcmeCustomerWithoutId } from '../../../examples/ExtractEntity.js';
 import { ModelWithoutId } from '../../helpers.js';
 
