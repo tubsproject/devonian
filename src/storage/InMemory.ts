@@ -1,7 +1,7 @@
 import { DevonianModel } from '../DevonianModel.js';
 import { IdentifierMap } from '../IdentifierMap.js';
 import { Storage } from './interface.js';
-export class CoreStorage<ModelWithoutId extends DevonianModel> {
+export class InMemoryStorage<ModelWithoutId extends DevonianModel> {
   private rows: ModelWithoutId[] = [];
   getRow(i: number):  ModelWithoutId | undefined {
     return this.rows[i];
@@ -21,8 +21,8 @@ export class IndexedStorage<ModelWithoutId extends DevonianModel>
 {
   private storageId: string;
   private semaphore: Promise<void>;
-  private coreStorage: CoreStorage<ModelWithoutId>;
-  constructor(storageId: string, coreStorage: CoreStorage<ModelWithoutId>) {
+  private coreStorage: InMemoryStorage<ModelWithoutId>;
+  constructor(storageId: string, coreStorage: InMemoryStorage<ModelWithoutId>) {
     this.storageId = storageId;
     this.coreStorage = coreStorage;
   }
