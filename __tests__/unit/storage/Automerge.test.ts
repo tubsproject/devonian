@@ -51,6 +51,17 @@ describe('upsert', () => {
       storage.upsert(daffy, [ 'foreignIds' ]),
        storage.upsert(wile, [ 'foreignIds' ]),
     ]);
-    expect(positions).toEqual([0, 1, 0]);
+    expect(positions).toEqual([{
+      "minted": true,
+      "position": 0,
+    },
+    {
+      "minted": true,
+      "position": 1,
+    },
+    {
+      "minted": false,
+      "position": 0,
+    }]);
   });
 });

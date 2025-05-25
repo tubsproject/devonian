@@ -46,9 +46,9 @@ export class DevonianTable<
         throw new Error('undefined position');
       }
       obj.foreignIds[`devonian-${this.replicaId}`] = position;
-      if (typeof this.minting[position] === 'undefined') {
+      if ((typeof this.minting[position] === 'undefined') && (typeof obj.foreignIds[this.platform] === 'undefined')) {
         console.log('really minting 1');
-        this.minting[position] = this.client.add(obj as ModelWithoutId);
+        this.minting[position] = this.client.add(JSON.parse(JSON.stringify(obj)) as ModelWithoutId);
         console.log('really minting 2');
         obj = await this.minting[position];
         console.log(`minting finished! Moving ${this.idFieldName} into foreignIds`, obj, typeof obj[this.idFieldName], (typeof obj[this.idFieldName] === 'undefined'));

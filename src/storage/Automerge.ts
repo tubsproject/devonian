@@ -4,7 +4,7 @@ import { CoreStorage } from './IndexedStorage.js';
 
 export class AutomergeStorage<ModelWithoutId extends DevonianModel>  implements CoreStorage<ModelWithoutId> {
   private docHandle: DocHandle<ModelWithoutId[]>;
-  private busy: Promise<void>[];
+  private busy: Promise<void>[] = [];
   constructor(docHandle: DocHandle<ModelWithoutId[]>) {
     this.docHandle = docHandle;
   }

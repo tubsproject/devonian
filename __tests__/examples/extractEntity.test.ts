@@ -179,10 +179,11 @@ describe('ExtractEntity', () => {
     });
     await new Promise(resolve => setTimeout(resolve, 0));
     expect(acmeOrderMockClient.added).toEqual([{
-      id: undefined,
+      // id: undefined,
       item: 'Anvil',
       quantity: 1,
-      shipDate: new Date('2023-02-03T00:00:00Z'),
+      // shipDate: new Date('2023-02-03T00:00:00Z'),
+      shipDate: '2023-02-03T00:00:00.000Z',
       customerName: 'Wile E Coyote',
       customerAddress: '123 Desert Station',
       foreignIds: {
