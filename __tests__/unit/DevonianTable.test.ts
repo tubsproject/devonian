@@ -54,13 +54,13 @@ describe('DevonianTable', () => {
         'zoo': '5',
       },
     };
-    console.log('point 1', await table.getRows());
+    // console.log('point 1', await table.getRows());
     await table.addFromLens(input);
-    console.log('point 2', await table.getRows());
+    // console.log('point 2', await table.getRows());
     await table.addFromLens(input);
-    console.log('point 3', await table.getRows());
+    // console.log('point 3', await table.getRows());
     await new Promise(resolve => setTimeout(resolve, 0));
-    console.log('point 4', await table.getRows());
+    // console.log('point 4', await table.getRows());
     expect (fooClient.added).toEqual([{
       "bar": "yep",
       "foreignIds": {

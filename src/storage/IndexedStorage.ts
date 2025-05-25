@@ -49,7 +49,7 @@ export class IndexedStorage<ModelWithoutId extends DevonianModel>
     // console.log('searching rows', rows);
     for (let i = 0; i < rows.length; i++) {
       if (this.rowMatches(where, rows[i])) {
-        console.log(`Row ${i} match`);
+        // console.log(`Row ${i} match`);
         return i;
       }
     }
@@ -113,7 +113,7 @@ export class IndexedStorage<ModelWithoutId extends DevonianModel>
     let position = await this.findObject(obj);
     let minted = false;
     const rows = await this.coreStorage.getRows();
-    console.log('this is where upsert decides', position, rows, fieldsToMerge, obj);
+    // console.log('this is where upsert decides', position, rows, fieldsToMerge, obj);
     if (typeof position === 'undefined') {
       position = rows.length;
       minted = true;
@@ -126,17 +126,17 @@ export class IndexedStorage<ModelWithoutId extends DevonianModel>
       });
     }
     if (JSON.stringify(rows[position]) !== JSON.stringify(obj)) {
-      console.log('UPDATING ROW', position, rows[position], obj);
+      // console.log('UPDATING ROW', position, rows[position], obj);
     }
-    console.log('doUpsert awaits setRow start', position, obj);
+    // console.log('doUpsert awaits setRow start', position, obj);
     await this.coreStorage.setRow(position, obj);
-    console.log('doUpsert awaits setRow end', position, minted, obj);
+    // console.log('doUpsert awaits setRow end', position, minted, obj);
     return { position, minted };
   }
   async upsert(obj: ModelWithoutId, fieldsToMerge: string[]): Promise<{ position: number, minted: boolean }> {
-    console.log('UPSERT', obj);
+    // console.log('UPSERT', obj);
     if (typeof this.semaphore !== 'undefined') {
-      console.log('awaiting semaphore');
+      // console.log('awaiting semaphore');
       await this.semaphore;
     }
     const promise = this.doUpsert(obj, fieldsToMerge );
