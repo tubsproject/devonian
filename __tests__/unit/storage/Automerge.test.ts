@@ -30,10 +30,15 @@ describe('set, get, findObject', () => {
   const storage = new IndexedStorage<ModelWithoutId>('storage-id', new AutomergeStorage<ModelWithoutId>(docHandle));
 
   it('can store rows', async () => {
+    console.log('1');
     const foo = { foo: 'bar', foreignIds: {} };
+    console.log('2');
     await storage.set(3, foo);
+    console.log('3');
     expect(await storage.get(3)).toEqual(foo);
+    console.log('4');
     expect(await storage.findObject(foo)).toEqual(3);
+    console.log('5');
   });
 });
 

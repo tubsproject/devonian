@@ -3,16 +3,13 @@ import { CoreStorage } from './IndexedStorage.js';
 
 export class InMemoryStorage<ModelWithoutId extends DevonianModel> implements CoreStorage<ModelWithoutId> {
   private rows: ModelWithoutId[] = [];
-  getRow(i: number):  ModelWithoutId | undefined {
+  async getRow(i: number):  Promise<ModelWithoutId | undefined> {
     return this.rows[i];
   }
   async setRow(i: number, row: ModelWithoutId): Promise<void> {
     this.rows[i] = row;
   }
-  getRows(): ModelWithoutId[] {
+  async getRows(): Promise<ModelWithoutId[]> {
     return this.rows;
-  }
-  getRowsLength(): number {
-    return this.rows.length;
   }
 }

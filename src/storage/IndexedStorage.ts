@@ -3,10 +3,9 @@ import { IdentifierMap } from '../IdentifierMap.js';
 import { Storage } from './interface.js';
 
 export interface CoreStorage<ModelWithoutId extends DevonianModel> {
-  getRow(i: number):  ModelWithoutId | undefined ;
-  setRow(i: number, row: ModelWithoutId): void;
-  getRows(): readonly ModelWithoutId[];
-  getRowsLength(): number;
+  getRow(i: number):  Promise<ModelWithoutId | undefined> ;
+  setRow(i: number, row: ModelWithoutId): Promise<void>;
+  getRows(): Promise<ModelWithoutId[]>;
 }
 
 export class IndexedStorage<ModelWithoutId extends DevonianModel>
@@ -19,42 +18,44 @@ export class IndexedStorage<ModelWithoutId extends DevonianModel>
     this.storageId = storageId;
     this.coreStorage = coreStorage;
   }
-  private rowMatches(i: number, where: object): boolean {
-    // console.log('here we go - rowMatches', i, where, this.coreStorage.getRow(i));
-    if (typeof this.coreStorage.getRow(i) === 'undefined') {
-      // console.log('returning false for undefined row!');
+  private rowMatches(where: object, row: ModelWithoutId): boolean {
+    console.log('here we go - rowMatches', where, row);
+    if (typeof row === 'undefined') {
+      console.log('returning false for undefined row!');
       return false;
     }
     for (let j = 0; j < Object.keys(where).length; j++) {
       const whereField = Object.keys(where)[j];
-      if (this.coreStorage.getRow(i)[whereField] !== where[whereField]) {
-        // console.log(`Row ${i} mismatch on ${whereField}`);
+      if (row[whereField] !== where[whereField]) {
+        console.log(`Row mismatch on ${whereField}`);
         return false;
       }
     }
     return true;
   }
   private rowMatchesId(
-    i: number,
     platform: string,
     id: string | number,
+    row: ModelWithoutId,
   ): boolean {
-    if (typeof this.coreStorage.getRow(i) === 'undefined') {
+    if (typeof row === 'undefined') {
       return false;
     }
-    return this.coreStorage.getRow(i).foreignIds[platform] === id;
+    return row.foreignIds[platform] === id;
   }
-  private findWhere(where: object): number | undefined {
-    // console.log('findWhere', where, this.rows);
-    for (let i = 0; i < this.coreStorage.getRowsLength(); i++) {
-      if (this.rowMatches(i, where)) {
-        // console.log(`Row ${i} match`);
+  private async findWhere(where: object): Promise<number | undefined> {
+    const rows = await this.coreStorage.getRows();
+    console.log('findWhere', where, rows);
+    console.log('searching rows', rows);
+    for (let i = 0; i < rows.length; i++) {
+      if (this.rowMatches(where, rows[i])) {
+        console.log(`Row ${i} match`);
         return i;
       }
     }
     return undefined;
   }
-  private findById(platform: string, id: string | number): number | undefined {
+  private async findById(platform: string, id: string | number): Promise<number | undefined> {
     if (platform === this.storageId) {
       // console.log(`Identity ${platform}:${id} is native`);
       return typeof id === 'string' ? parseInt(id) : id;
@@ -64,8 +65,9 @@ export class IndexedStorage<ModelWithoutId extends DevonianModel>
     // I could use for .. in but that makes i a string instead of a number
     // see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Indexed_collections#sparse_arrays
     // and https://stackoverflow.com/a/54847594/680454
-    for (let i = 0; i < this.coreStorage.getRowsLength(); i++) {
-      if (this.rowMatchesId(i, platform, id)) {
+    const rows = await this.coreStorage.getRows();
+    for (let i = 0; i < rows.length; i++) {
+      if (this.rowMatchesId(platform, id, rows[i])) {
         // console.log(`Row ${i} non-native match`);
         return i;
       }
@@ -77,7 +79,7 @@ export class IndexedStorage<ModelWithoutId extends DevonianModel>
     const platforms = Object.keys(idMap);
     for (let i = 0; i < platforms.length; i++) {
       // console.log(`Trying platform ${i}`);
-      const thisResult = this.findById(platforms[i], idMap[platforms[i]]);
+      const thisResult = await this.findById(platforms[i], idMap[platforms[i]]);
       // console.log(`back from findById; result`, thisResult, typeof thisResult);
       if (typeof thisResult === 'string' || typeof thisResult === 'number') {
         // console.log(`Row ${thisResult} match, returning from findByIdMap`);
@@ -94,22 +96,23 @@ export class IndexedStorage<ModelWithoutId extends DevonianModel>
     this.coreStorage.setRow(position, obj);
   }
   async findObject(obj: ModelWithoutId): Promise<number | undefined> {
-    // console.log('findObject calls findByIdMap');
+    console.log('findObject calls findByIdMap');
     let position = await this.findByIdMap(obj.foreignIds);
-    // console.log('back in findObject', position, typeof position);
+    console.log('back in findObject', position, typeof position);
     if (typeof position === 'undefined') {
       const where = JSON.parse(JSON.stringify(obj));
       delete where.foreignIds;
-      // console.log('findObject calls findWhere', position);
-      position = this.findWhere(where);
+      console.log('findObject calls findWhere', where);
+      position = await this.findWhere(where);
     }
     return position;
   }
   async doUpsert(obj: ModelWithoutId): Promise<number> {
     let position = await this.findObject(obj);
+    const rows = await this.coreStorage.getRows();
     // console.log('this is where upsert decides', position, this.rows);
     if (typeof position === 'undefined') {
-      position = this.coreStorage.getRowsLength();
+      position = rows.length;
     }
     if (JSON.stringify(this.coreStorage.getRow(position)) !== JSON.stringify(obj)) {
       // console.log('UPDATING ROW', position, this.coreStorage.getRow(position), obj);
@@ -128,7 +131,8 @@ export class IndexedStorage<ModelWithoutId extends DevonianModel>
     });
     return promise;
   }
-  getRows(): readonly ModelWithoutId[] {
+  getRows(): Promise<ModelWithoutId[]> {
     return this.coreStorage.getRows();
   }
 }
+// 

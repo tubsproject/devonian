@@ -70,7 +70,7 @@ export class DevonianTable<
     // console.log('return');
     return position;
   }
-  async getRows(): Promise<readonly ModelWithoutId[]> {
+  async getRows(): Promise<ModelWithoutId[]> {
     return this.storage.getRows();
   }
   async getRow(position: number): Promise<ModelWithoutId> {

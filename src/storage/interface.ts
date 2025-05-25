@@ -5,5 +5,5 @@ export interface Storage<ModelWithoutId extends DevonianModel> {
   get(position: number): Promise<ModelWithoutId>;
   set(position: number, obj: ModelWithoutId): Promise<void>;
   upsert(obj: ModelWithoutId): Promise<number>;
-  getRows(): readonly ModelWithoutId[];
+  getRows(): Promise<ModelWithoutId[]>;
 }
