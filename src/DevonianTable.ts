@@ -37,7 +37,7 @@ export class DevonianTable<
     });
   }
   async addFromLens(obj: ModelWithoutId): Promise<number> {
-    console.log('upserting', obj);
+    console.log('addFromLens is upserting', obj);
     const position = await this.storage.upsert(obj); // FIXME: This is returning 2 instead of 0 for the second time Wile E Coyote
     console.log({ position }, obj.foreignIds, this.platform);
     if (typeof obj.foreignIds[this.platform] === 'undefined') {

@@ -7,20 +7,6 @@ import { Repo } from '@automerge/automerge-repo';
 import { BroadcastChannelNetworkAdapter } from '@automerge/automerge-repo-network-broadcastchannel';
 import { NodeFSStorageAdapter } from '@automerge/automerge-repo-storage-nodefs';
 
-// docHandle.on('change', ({ patchInfo }) => {
-//   console.log(`change on docHandle1, patchInfo:`, patchInfo);
-// });
-// console.log('docHandle1 created');
-// type ModelWithoutId = DevonianModel & {
-//   foo: string;
-// };
-
-//   findObject(obj: ModelWithoutId): Promise<number | undefined>;
-//   get(position: number): Promise<ModelWithoutId>;
-//   set(position: number, obj: ModelWithoutId): Promise<void>;
-//   upsert(obj: ModelWithoutId): Promise<number>;
-//   getRows(): Promise<ModelWithoutId[]>;
-
 describe('set, get, findObject', () => {
   const repo = new Repo({
     network: [new BroadcastChannelNetworkAdapter()],
