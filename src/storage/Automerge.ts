@@ -2,7 +2,9 @@ import { DocHandle } from '@automerge/automerge-repo';
 import { DevonianModel } from '../DevonianModel.js';
 import { CoreStorage } from './IndexedStorage.js';
 
-export class AutomergeStorage<ModelWithoutId extends DevonianModel>  implements CoreStorage<ModelWithoutId> {
+export class AutomergeStorage<ModelWithoutId extends DevonianModel>
+  implements CoreStorage<ModelWithoutId>
+{
   private docHandle: DocHandle<ModelWithoutId[]>;
   private busy: Promise<void>[] = [];
   constructor(docHandle: DocHandle<ModelWithoutId[]>) {
@@ -29,7 +31,7 @@ export class AutomergeStorage<ModelWithoutId extends DevonianModel>  implements 
     // console.log('before change', i, row);
     // console.log('doc before', await this.docHandle.doc()[i]);
     this.busy[i] = new Promise((resolve) => {
-      this.docHandle.change(d => {
+      this.docHandle.change((d) => {
         // console.log('change start', i, row);
         d[i] = row;
         // console.log('change done', i, row);
@@ -42,7 +44,7 @@ export class AutomergeStorage<ModelWithoutId extends DevonianModel>  implements 
   }
   async getRows(): Promise<ModelWithoutId[]> {
     const stringMap = await this.docHandle.doc();
-    const ret:  ModelWithoutId[] = [];
+    const ret: ModelWithoutId[] = [];
     Object.keys(stringMap).forEach((key: string) => {
       ret[parseInt(key)] = stringMap[key];
     });

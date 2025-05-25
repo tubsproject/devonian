@@ -25,20 +25,25 @@ export class DevonianTable<
   constructor(options: DevonianTableOptions<ModelWithoutId, Model>) {
     super();
     this.replicaId = options.replicaId;
-    this.storage = new IndexedStorage<ModelWithoutId>(`devonian-${this.replicaId}`, new InMemoryStorage<ModelWithoutId>());
+    this.storage = new IndexedStorage<ModelWithoutId>(
+      `devonian-${this.replicaId}`,
+      new InMemoryStorage<ModelWithoutId>(),
+    );
     this.client = options.client;
     this.idFieldName = options.idFieldName;
     this.platform = options.platform;
     this.client.on('add-from-client', async (obj: Model) => {
       // console.log('adding from client, upsert start');
-      await this.storage.ensureRow(obj, [ 'foreignIds' ]);
+      await this.storage.ensureRow(obj, ['foreignIds']);
       // console.log('adding from client, upsert finish');
       this.emit('add-from-client', obj);
     });
   }
   async ensureRow(obj: ModelWithoutId): Promise<number> {
     // console.log('addFromLens is upserting', obj);
-    const { position, minted } = await this.storage.ensureRow(obj, [ 'foreignIds' ]); // FIXME: This is returning 2 instead of 0 for the second time Wile E Coyote
+    const { position, minted } = await this.storage.ensureRow(obj, [
+      'foreignIds',
+    ]); // FIXME: This is returning 2 instead of 0 for the second time Wile E Coyote
     // console.log({ position, minted }, obj.foreignIds, this.platform);
     if (minted && typeof obj.foreignIds[this.platform] === 'undefined') {
       // console.log('maybe minting', this.minting, position);
@@ -46,9 +51,14 @@ export class DevonianTable<
         throw new Error('undefined position');
       }
       obj.foreignIds[`devonian-${this.replicaId}`] = position;
-      if ((typeof this.minting[position] === 'undefined') && (typeof obj.foreignIds[this.platform] === 'undefined')) {
+      if (
+        typeof this.minting[position] === 'undefined' &&
+        typeof obj.foreignIds[this.platform] === 'undefined'
+      ) {
         // console.log('really minting 1');
-        this.minting[position] = this.client.add(JSON.parse(JSON.stringify(obj)) as ModelWithoutId);
+        this.minting[position] = this.client.add(
+          JSON.parse(JSON.stringify(obj)) as ModelWithoutId,
+        );
         // console.log('really minting 2');
         obj = await this.minting[position];
         // // console.log(`minting finished! Moving ${this.idFieldName} into foreignIds`, obj, typeof obj[this.idFieldName], (typeof obj[this.idFieldName] === 'undefined'));
@@ -59,8 +69,8 @@ export class DevonianTable<
         }
         obj.foreignIds[this.platform] = obj[this.idFieldName];
         delete obj[this.idFieldName];
-        await this.storage.ensureRow(obj as ModelWithoutId, [ 'foreignIds' ]);
-        await new Promise(resolve => setTimeout(resolve, 0));
+        await this.storage.ensureRow(obj as ModelWithoutId, ['foreignIds']);
+        await new Promise((resolve) => setTimeout(resolve, 0));
         // console.log('DELETING THE MINTING SEMAPHORE!', await this.getRows());
         delete this.minting[position];
       } else {
