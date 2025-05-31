@@ -1,4 +1,10 @@
 import { EventEmitter } from 'node:events';
+import { DevonianModel } from '../src/DevonianModel.js';
+
+export type ModelWithoutId = DevonianModel & {
+  foo: string;
+};
+
 export class MockClient<ModelWithoutId, Model> extends EventEmitter {
   added: ModelWithoutId[] = [];
   name: string;
@@ -12,6 +18,7 @@ export class MockClient<ModelWithoutId, Model> extends EventEmitter {
     const position = this.added.length;
     // console.log(`Adding in ${this.name} mock client`, obj, position);
     this.added.push(obj);
+    // console.log(`In ${this.name} mock client now have ${this.added.length} rows added`;
     const ret = JSON.parse(JSON.stringify(obj));
     ret[this.idFieldName] = position;
     return ret;

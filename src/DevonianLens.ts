@@ -19,11 +19,11 @@ export class DevonianLens<
     this.right = right;
     left.on('add-from-client', async (added: LeftModel) => {
       // console.log('lens forwards addition event from left to right');
-      right.addFromLens(await leftToRight(added));
+      right.ensureRow(await leftToRight(added));
     });
     right.on('add-from-client', async (added: RightModel) => {
       // console.log('lens forwards addition event from right to left');
-      left.addFromLens(await rightToLeft(added));
+      left.ensureRow(await rightToLeft(added));
     });
   }
 }
