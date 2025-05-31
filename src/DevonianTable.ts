@@ -40,11 +40,11 @@ export class DevonianTable<
     });
   }
   async ensureRow(obj: ModelWithoutId): Promise<number> {
-    // console.log('addFromLens is upserting', obj);
+    console.log('ensureRow', obj);
     const { position, minted } = await this.storage.ensureRow(obj, [
       'foreignIds',
     ]); // FIXME: This is returning 2 instead of 0 for the second time Wile E Coyote
-    // console.log({ position, minted }, obj.foreignIds, this.platform);
+    console.log({ position, minted }, obj.foreignIds, this.platform);
     if (minted && typeof obj.foreignIds[this.platform] === 'undefined') {
       // console.log('maybe minting', this.minting, position);
       if (typeof position === 'undefined') {

@@ -16,8 +16,9 @@ export class MockClient<ModelWithoutId, Model> extends EventEmitter {
   }
   async add(obj: ModelWithoutId): Promise<Model> {
     const position = this.added.length;
-    // console.log(`Adding in ${this.name} mock client`, obj, position);
+    console.log(`Adding in ${this.name} mock client`, obj, position);
     this.added.push(obj);
+    console.log(`In ${this.name} mock client now have ${this.added.length} rows added`);
     const ret = JSON.parse(JSON.stringify(obj));
     ret[this.idFieldName] = position;
     return ret;

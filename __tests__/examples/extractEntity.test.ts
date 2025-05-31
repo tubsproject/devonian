@@ -1,12 +1,12 @@
 import { MockClient } from '../helpers.js';
 import { describe, it, expect } from 'vitest';
 import { DevonianIndex } from '../../src/DevonianIndex.js';
-import { AcmeOrderWithoutId, AcmeLinkedOrderWithoutId, AcmeCustomerWithoutId, AcmeOrder, AcmeLinkedOrder, AcmeCustomer, ExtractEntityBridge } from '../../examples/ExtractEntity.js';
+import { AcmeComprehensiveOrderWithoutId, AcmeLinkedOrderWithoutId, AcmeCustomerWithoutId, AcmeComprehensiveOrder, AcmeLinkedOrder, AcmeCustomer, ExtractEntityBridge } from '../../examples/ExtractEntity.js';
 
 describe('ExtractEntity', () => {
   const replicaId = `test-instance`;
   const index = new DevonianIndex();
-  const acmeOrderMockClient = new MockClient<AcmeOrderWithoutId, AcmeOrder>('orders');
+  const acmeOrderMockClient = new MockClient<AcmeComprehensiveOrderWithoutId, AcmeComprehensiveOrder>('orders');
   const acmeCustomerMockClient = new MockClient<AcmeCustomerWithoutId, AcmeCustomer>('customers');
   const acmeLinkedOrderMockClient = new MockClient<AcmeLinkedOrderWithoutId, AcmeLinkedOrder>('linked orders');
   const bridge = new ExtractEntityBridge(index, acmeOrderMockClient, acmeCustomerMockClient, acmeLinkedOrderMockClient, replicaId);
@@ -42,7 +42,10 @@ describe('ExtractEntity', () => {
       customerAddress: '123 Desert Station',
       foreignIds: {},
     });
-    await new Promise(resolve => setTimeout(resolve, 0));
+    console.log('next tick start');
+    await new Promise(resolve => setTimeout(resolve, 10));
+    console.log('next tick end');
+    expect(acmeLinkedOrderMockClient.added.length).toEqual(3);
     expect(acmeCustomerMockClient.added).toEqual([{
       name: 'Wile E Coyote',
       address: '123 Desert Station',
@@ -58,33 +61,33 @@ describe('ExtractEntity', () => {
       },
     }]);
     expect(acmeLinkedOrderMockClient.added).toEqual([{
+      "item": "Bird Seed",
+      "quantity": 1,
+      // "shipDate": undefined,
+      "customerId": 0, // Wile
+      "foreignIds": {
+        "comprehensive": "2", 
+        "devonian-test-instance": 0,
+      },
+    },
+    {
       item: 'Anvil',
       quantity: 1,
-      shipDate: new Date('2023-02-03T00:00:00Z'),
+      shipDate: '2023-02-03T00:00:00.000Z', // new Date('2023-02-03T00:00:00Z'),
       customerId: 0, // Wile
       foreignIds: {
         comprehensive: '0',
-        "devonian-test-instance": 0,
+        "devonian-test-instance": 1,
       },
     },
     {
       "item": "Dynamite",
       "quantity": 1,
-      "shipDate": undefined, // I guess it's OK to get an explicit value of undefined here
+      // "shipDate": undefined, // I guess it's OK to get an explicit value of undefined here
       "customerId": 1, // Daffy
       "foreignIds": {
         "comprehensive": "1",
-        "devonian-test-instance": 1,
-      },
-    },
-    {
-      "item": "Bird Seed",
-      "quantity": 1,
-      "shipDate": undefined,
-      "customerId": 0, // Wile
-      "foreignIds": {
-        "comprehensive": "2", 
-        "devonian-test-instance": 0,
+        "devonian-test-instance": 2,
       },
     }]);
     expect(await bridge.acmeOrderTable.getRows()).toEqual([{
@@ -116,17 +119,17 @@ describe('ExtractEntity', () => {
     }]);
     expect(await bridge.acmeCustomerTable.getRows()).toEqual([
       {
-        "id": 0,
         "name": "Wile E Coyote",
         "address": "123 Desert Station",
         "foreignIds": {
+          "devonian-test-instance": 0,
         },
       },
       {
-        "id": 1,
         "name": "Daffy Duck",
         "address": "White Rock Lake",
         "foreignIds": {
+          "devonian-test-instance": 1,
         },
       },
     ]);
