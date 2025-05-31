@@ -91,11 +91,15 @@ More documentation coming soon.
 Please [create an issue](https://github.com/tubsproject/devonian/issues/new) with any feedback you might have.
 ```sh
 pnpm install
+pnpm build
 pnpm test
 pnpm lint
 pnpm prettier
-pnpm build
 pnpm typedoc
+git commit
 pnpm version patch
+git push
+git push --tags
+pnpm build:release
 pnpm publish
 ```
