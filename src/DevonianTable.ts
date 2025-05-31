@@ -39,11 +39,17 @@ export class DevonianTable<
       this.emit('add-from-client', obj);
     });
   }
-  async ensureOnStorage(obj: ModelWithoutId, fieldsToMerge: string[]): Promise<{ position: number; minted: boolean }> {
+  async ensureOnStorage(
+    obj: ModelWithoutId,
+    fieldsToMerge: string[],
+  ): Promise<{ position: number; minted: boolean }> {
     const removeNativeForeignId = JSON.parse(JSON.stringify(obj));
-    delete (removeNativeForeignId as ModelWithoutId).foreignIds[`devonian-${this.replicaId}`];
+    delete (removeNativeForeignId as ModelWithoutId).foreignIds[
+      `devonian-${this.replicaId}`
+    ];
     if (typeof removeNativeForeignId[this.idFieldName] !== 'undefined') {
-      removeNativeForeignId.foreignIds[this.platform] = removeNativeForeignId[this.idFieldName];
+      removeNativeForeignId.foreignIds[this.platform] =
+        removeNativeForeignId[this.idFieldName];
       delete removeNativeForeignId[this.idFieldName];
     }
     // console.log('ensureRow on storage', removeNativeForeignId);

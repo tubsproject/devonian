@@ -66,6 +66,8 @@ Please [create an issue](https://github.com/tubsproject/devonian/issues/new) wit
 ```sh
 pnpm install
 pnpm test
+pnpm lint
+pnpm prettier
 pnpm build
 pnpm publish
 ```
