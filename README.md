@@ -69,5 +69,7 @@ pnpm test
 pnpm lint
 pnpm prettier
 pnpm build
+pnpm typedoc
+pnpm version patch
 pnpm publish
 ```
