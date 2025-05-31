@@ -34,17 +34,28 @@ export class DevonianTable<
     this.platform = options.platform;
     this.client.on('add-from-client', async (obj: Model) => {
       // console.log('adding from client, upsert start');
-      await this.storage.ensureRow(obj, ['foreignIds']);
+      const removeNativeForeignId = JSON.parse(JSON.stringify(obj));
+      delete removeNativeForeignId.foreignIds[this.replicaId];
+      removeNativeForeignId.foreignIds[this.platform] = removeNativeForeignId[this.idFieldName];
+      delete removeNativeForeignId[this.idFieldName];
+      await this.ensureOnStorage(removeNativeForeignId, ['foreignIds']);
       // console.log('adding from client, upsert finish');
       this.emit('add-from-client', obj);
     });
   }
+  async ensureOnStorage(obj: ModelWithoutId, fieldsToMerge: string[]): Promise<{ position: number; minted: boolean }> {
+    const removeNativeForeignId = JSON.parse(JSON.stringify(obj));
+    delete (removeNativeForeignId as ModelWithoutId).foreignIds[`devonian-${this.replicaId}`];
+    return this.storage.ensureRow(removeNativeForeignId, fieldsToMerge);
+  }
   async ensureRow(obj: ModelWithoutId): Promise<number> {
-    console.log('ensureRow', obj);
-    const { position, minted } = await this.storage.ensureRow(obj, [
+    // console.log('ensureRow', obj);
+    const removeNativeForeignId = JSON.parse(JSON.stringify(obj));
+    delete removeNativeForeignId.foreignIds[this.replicaId];
+    const { position, minted } = await this.ensureOnStorage(removeNativeForeignId, [
       'foreignIds',
     ]); // FIXME: This is returning 2 instead of 0 for the second time Wile E Coyote
-    console.log({ position, minted }, obj.foreignIds, this.platform);
+    // console.log({ position, minted }, obj.foreignIds, this.platform);
     if (minted && typeof obj.foreignIds[this.platform] === 'undefined') {
       // console.log('maybe minting', this.minting, position);
       if (typeof position === 'undefined') {
@@ -67,9 +78,7 @@ export class DevonianTable<
             `client did not assign a value to the platform id field "${this.idFieldName}"`,
           );
         }
-        obj.foreignIds[this.platform] = obj[this.idFieldName];
-        delete obj[this.idFieldName];
-        await this.storage.ensureRow(obj as ModelWithoutId, ['foreignIds']);
+        await this.ensureOnStorage(obj as ModelWithoutId, ['foreignIds']);
         await new Promise((resolve) => setTimeout(resolve, 0));
         // console.log('DELETING THE MINTING SEMAPHORE!', await this.getRows());
         delete this.minting[position];
@@ -103,21 +112,13 @@ export class DevonianTable<
     }
     if (typeof this.minting[position] !== 'undefined') {
       // console.log('oh, that position is minting!');
-      return this.minting[position].then((obj: Model) => {
+      return this.minting[position].then(() => {
         // console.log('oh, that position is done minting!', obj, this.platform);
-        return obj.foreignIds[this.platform];
+        return position;
       });
     }
-    // console.log('calling storage get', position);
     const obj = await this.storage.get(position);
-    // console.log('getting platform id from object', obj, this.platform);
-    // if (typeof obj.foreignIds[this.platform] === 'undefined') {
-    //     // console.log('really minting');
-    //     this.minting[position] = this.client.add(obj as ModelWithoutId);
-    // }
-    if (addIfMissing && typeof obj.foreignIds[this.platform] === 'undefined') {
-      throw new Error('this should never happen');
-    }
+    obj.foreignIds[this.platform] = position;
     return obj.foreignIds[this.platform];
   }
 }

@@ -37,7 +37,7 @@ export type AcmeLinkedOrder =  AcmeLinkedOrderWithoutId & {
 
 export class ExtractEntityBridge {
   index: DevonianIndex;
-  acmeOrderTable: DevonianTable<AcmeComprehensiveOrderWithoutId, AcmeComprehensiveOrder>;
+  acmeComprehensiveOrderTable: DevonianTable<AcmeComprehensiveOrderWithoutId, AcmeComprehensiveOrder>;
   acmeCustomerTable: DevonianTable<AcmeCustomerWithoutId, AcmeCustomer>;
   acmeLinkedOrderTable: DevonianTable<AcmeLinkedOrderWithoutId, AcmeLinkedOrder>;
 
@@ -46,11 +46,11 @@ export class ExtractEntityBridge {
       replicaId = randomBytes(8).toString('hex');
     }
     this.index = index;
-    this.acmeOrderTable = new DevonianTable<AcmeComprehensiveOrderWithoutId, AcmeComprehensiveOrder>({ client: acmeOrderClient, platform: 'comprehensive', idFieldName: 'id', replicaId });
+    this.acmeComprehensiveOrderTable = new DevonianTable<AcmeComprehensiveOrderWithoutId, AcmeComprehensiveOrder>({ client: acmeOrderClient, platform: 'comprehensive', idFieldName: 'id', replicaId });
     this.acmeCustomerTable = new DevonianTable<AcmeCustomerWithoutId, AcmeCustomer>({ client: acmeCustomerClient, platform: 'linked', idFieldName: 'id', replicaId });
     this.acmeLinkedOrderTable = new DevonianTable<AcmeLinkedOrderWithoutId, AcmeLinkedOrder>({ client: acmeLinkedOrderClient, platform: 'linked', idFieldName: 'id', replicaId });
     new DevonianLens<AcmeComprehensiveOrderWithoutId, AcmeLinkedOrderWithoutId, AcmeComprehensiveOrder, AcmeLinkedOrder>(
-      this.acmeOrderTable,
+      this.acmeComprehensiveOrderTable,
       this.acmeLinkedOrderTable,
       async (input: AcmeComprehensiveOrder): Promise<AcmeLinkedOrder> => {
         const customerId = await this.acmeCustomerTable.getPlatformId({

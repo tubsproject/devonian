@@ -6,9 +6,13 @@ export class InMemoryStorage<ModelWithoutId extends DevonianModel>
 {
   private rows: ModelWithoutId[] = [];
   async getRow(i: number): Promise<ModelWithoutId | undefined> {
-    return this.rows[i];
+    return JSON.parse(JSON.stringify(this.rows[i])); // copy on read
   }
   async setRow(i: number, row: ModelWithoutId): Promise<void> {
+    console.log('storing', i, row);
+    if (typeof row.foreignIds['devonian-test-instance'] !== 'undefined') {
+      throw new Error();
+    }
     this.rows[i] = row;
   }
   async getRows(): Promise<ModelWithoutId[]> {

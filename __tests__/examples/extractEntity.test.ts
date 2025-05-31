@@ -90,46 +90,49 @@ describe('ExtractEntity', () => {
         "devonian-test-instance": 2,
       },
     }]);
-    expect(await bridge.acmeOrderTable.getRows()).toEqual([{
-      "id": 0,
+    expect(await bridge.acmeComprehensiveOrderTable.getRows()).toEqual([{
       "item": "Anvil",
       "quantity": 1,
-      "shipDate": new Date('2023-02-03T00:00:00.000Z'),
+      "shipDate": '2023-02-03T00:00:00.000Z',
       "customerName": "Wile E Coyote",
       "customerAddress": "123 Desert Station",
-      "foreignIds": {},
+      "foreignIds": {
+        "comprehensive": 0,
+      },
     },
     {
-      "id": 1,
       "item": "Dynamite",
       "quantity": 1,
       "shipDate": undefined,
       "customerName": "Daffy Duck",
       "customerAddress": "White Rock Lake",
-      "foreignIds": {},
+      "foreignIds": {
+        "comprehensive": 1,
+      },
     },
     {
-      "id": 2,
       "item": "Bird Seed",
       "quantity": 1,
       "shipDate": undefined,
       "customerName": "Wile E Coyote",
       "customerAddress": "123 Desert Station",
-      "foreignIds": {},
+      "foreignIds": {
+        "comprehensive": 2,
+      },
     }]);
     expect(await bridge.acmeCustomerTable.getRows()).toEqual([
       {
         "name": "Wile E Coyote",
         "address": "123 Desert Station",
         "foreignIds": {
-          "devonian-test-instance": 0,
+          "linked": 0,
         },
       },
       {
         "name": "Daffy Duck",
         "address": "White Rock Lake",
         "foreignIds": {
-          "devonian-test-instance": 1,
+          "linked": 1,
         },
       },
     ]);
