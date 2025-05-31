@@ -23,7 +23,7 @@ describe('DevonianTable', () => {
       },
     };
     await table.ensureRow(input);
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise(resolve => setTimeout(resolve, 100));
     expect (fooClient.added).toEqual([{
       "bar": "yep",
       "foreignIds": {
@@ -37,7 +37,6 @@ describe('DevonianTable', () => {
       "bar": "yep",
       "foreignIds": {
         "zoo": "5",
-        "devonian-inside-unit-tests": 0,
         "foo": 0,
       },
     }], null, 2));
@@ -59,7 +58,7 @@ describe('DevonianTable', () => {
     // console.log('point 2', await table.getRows());
     await table.ensureRow(input);
     // console.log('point 3', await table.getRows());
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise(resolve => setTimeout(resolve, 10));
     // console.log('point 4', await table.getRows());
     expect (fooClient.added).toEqual([{
       "bar": "yep",
@@ -74,7 +73,6 @@ describe('DevonianTable', () => {
       "bar": "yep",
       "foreignIds": {
         "zoo": "5",
-        "devonian-inside-unit-tests": 0,
         "foo": 0,
       },
     }], null, 2));

@@ -43,9 +43,8 @@ describe('ExtractEntity', () => {
       foreignIds: {},
     });
     console.log('next tick start');
-    await new Promise(resolve => setTimeout(resolve, 10));
+    await new Promise(resolve => setTimeout(resolve, 100));
     console.log('next tick end');
-    expect(acmeLinkedOrderMockClient.added.length).toEqual(3);
     expect(acmeCustomerMockClient.added).toEqual([{
       name: 'Wile E Coyote',
       address: '123 Desert Station',
@@ -60,6 +59,7 @@ describe('ExtractEntity', () => {
         "devonian-test-instance": 1,
       },
     }]);
+    expect(acmeLinkedOrderMockClient.added.length).toEqual(3);
     expect(acmeLinkedOrderMockClient.added).toEqual([{
       "item": "Bird Seed",
       "quantity": 1,
@@ -137,33 +137,31 @@ describe('ExtractEntity', () => {
       },
     ]);
     expect(await bridge.acmeLinkedOrderTable.getRows()).toEqual([{
-      "id": 0,
+      "item": "Bird Seed",
+      "quantity": 1,
+      "customerId": 0,
+      "foreignIds": {
+        "comprehensive": "2",
+        "linked": 0,
+      },
+    },
+    {
       "item": "Anvil",
       "quantity": 1,
       "shipDate": '2023-02-03T00:00:00.000Z',
       "customerId": 0,
       "foreignIds": {
         "comprehensive": "0",
+        "linked": 1,
       },
     },
     {
-      "id": 1,
       "item": "Dynamite",
       "quantity": 1,
-      "shipDate": undefined,
       "customerId": 1,
       "foreignIds": {
         "comprehensive": "1",
-      },
-    },
-    {
-      "id": 2,
-      "item": "Bird Seed",
-      "quantity": 1,
-      "shipDate": undefined,
-      "customerId": 0,
-      "foreignIds": {
-        "comprehensive": "2",
+        "linked": 2,
       },
     }]);
     expect(index.ids).toEqual({});

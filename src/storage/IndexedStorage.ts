@@ -143,9 +143,6 @@ export class IndexedStorage<ModelWithoutId extends DevonianModel>
     obj: ModelWithoutId,
     fieldsToMerge: string[],
   ): Promise<{ position: number; minted: boolean }> {
-    if (typeof obj.foreignIds['devonian-test-instance'] !== 'undefined') {
-      throw new Error();
-    }
     // console.log('UPSERT', obj);
     if (typeof this.semaphore !== 'undefined') {
       // console.log('awaiting semaphore');

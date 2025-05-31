@@ -10,9 +10,6 @@ export class InMemoryStorage<ModelWithoutId extends DevonianModel>
   }
   async setRow(i: number, row: ModelWithoutId): Promise<void> {
     console.log('storing', i, row);
-    if (typeof row.foreignIds['devonian-test-instance'] !== 'undefined') {
-      throw new Error();
-    }
     this.rows[i] = row;
   }
   async getRows(): Promise<ModelWithoutId[]> {
