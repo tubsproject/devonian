@@ -46,7 +46,7 @@ export class DevonianTable<
       removeNativeForeignId.foreignIds[this.platform] = removeNativeForeignId[this.idFieldName];
       delete removeNativeForeignId[this.idFieldName];
     }
-    console.log('ensureRow on storage', removeNativeForeignId);
+    // console.log('ensureRow on storage', removeNativeForeignId);
     return this.storage.ensureRow(removeNativeForeignId, fieldsToMerge);
   }
   async ensureRow(obj: ModelWithoutId): Promise<number> {

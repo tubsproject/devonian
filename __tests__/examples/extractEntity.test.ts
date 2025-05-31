@@ -11,7 +11,7 @@ describe('ExtractEntity', () => {
   const acmeLinkedOrderMockClient = new MockClient<AcmeLinkedOrderWithoutId, AcmeLinkedOrder>('linked orders');
   const bridge = new ExtractEntityBridge(index, acmeOrderMockClient, acmeCustomerMockClient, acmeLinkedOrderMockClient, replicaId);
   // console.log('Comprehensive is left, Linked is right');
-  it('can go from comprehensive to linked', async () => {
+  it('can replicate creations from comprehensive to linked', async () => {
     // console.log('fakeIncoming Anvil');
     acmeOrderMockClient.fakeIncoming({
       id: 0,
@@ -42,9 +42,7 @@ describe('ExtractEntity', () => {
       customerAddress: '123 Desert Station',
       foreignIds: {},
     });
-    console.log('next tick start');
     await new Promise(resolve => setTimeout(resolve, 100));
-    console.log('next tick end');
     expect(acmeCustomerMockClient.added).toEqual([{
       name: 'Wile E Coyote',
       address: '123 Desert Station',
@@ -168,28 +166,28 @@ describe('ExtractEntity', () => {
     expect(index.index).toEqual({});
   });
 
-  // it('can go from linked to comprehensive', async () => {
-  //   acmeLinkedOrderMockClient.fakeIncoming({
-  //     id: 0,
-  //     item: 'Anvil',
-  //     quantity: 1,
-  //     shipDate: new Date('2023-02-03T00:00:00Z'),
-  //     customerId: 0,
-  //     foreignIds: {},
-  //   });
-  //   await new Promise(resolve => setTimeout(resolve, 0));
-  //   expect(acmeOrderMockClient.added).toEqual([{
-  //     // id: undefined,
-  //     item: 'Anvil',
-  //     quantity: 1,
-  //     // shipDate: new Date('2023-02-03T00:00:00Z'),
-  //     shipDate: '2023-02-03T00:00:00.000Z',
-  //     customerName: 'Wile E Coyote',
-  //     customerAddress: '123 Desert Station',
-  //     foreignIds: {
-  //       linked: '0',
-  //       "devonian-test-instance": 3,
-  //     },
-  //   }]);
-  // });
+  it('can then replicate an update from linked to comprehensive', async () => {
+    acmeLinkedOrderMockClient.fakeIncoming({
+      id: 0,
+      item: 'Anvil',
+      quantity: 5, // was 1 in the previous test, so this should trigger an update
+      shipDate: new Date('2023-02-03T00:00:00Z'),
+      customerId: 0,
+      foreignIds: {},
+    });
+    await new Promise(resolve => setTimeout(resolve, 100));
+    expect(acmeOrderMockClient.added).toEqual([{
+      // id: undefined,
+      item: 'Anvil',
+      quantity: 5,
+      // shipDate: new Date('2023-02-03T00:00:00Z'),
+      shipDate: '2023-02-03T00:00:00.000Z',
+      customerName: 'Wile E Coyote',
+      customerAddress: '123 Desert Station',
+      foreignIds: {
+        linked: '0',
+        "devonian-test-instance": 3,
+      },
+    }]);
+  });
 }); 

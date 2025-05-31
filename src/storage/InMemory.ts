@@ -9,7 +9,7 @@ export class InMemoryStorage<ModelWithoutId extends DevonianModel>
     return JSON.parse(JSON.stringify(this.rows[i])); // copy on read
   }
   async setRow(i: number, row: ModelWithoutId): Promise<void> {
-    console.log('storing', i, row);
+    // console.log('storing', i, row);
     this.rows[i] = row;
   }
   async getRows(): Promise<ModelWithoutId[]> {
