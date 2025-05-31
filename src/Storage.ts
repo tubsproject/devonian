@@ -14,7 +14,7 @@ export class InMemory<ModelWithoutId extends DevonianModel>
 {
   private rows: ModelWithoutId[] = [];
   private storageId: string;
-  private semaphore: Promise<void>;
+  private semaphore: Promise<void> = Promise.resolve();
   constructor(storageId: string) {
     this.storageId = storageId;
   }

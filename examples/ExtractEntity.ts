@@ -9,7 +9,7 @@ import { DevonianIndex  } from '../src/DevonianIndex.js';
 export type AcmeOrderWithoutId = DevonianModel & {
   item: string;
   quantity: number;
-  shipDate: Date;
+  shipDate: Date | undefined;
   customerName: string;
   customerAddress: string;
 }

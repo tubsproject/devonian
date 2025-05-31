@@ -11,7 +11,7 @@ export type SolidMessageWithoutId = DevonianModel & {
 };
 
 export type SolidMessage = SolidMessageWithoutId & {
-  uri?: string,
+  uri: string,
 };
 
 export class SolidMessageClient extends DevonianClient<SolidMessageWithoutId, SolidMessage> {

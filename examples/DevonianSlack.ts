@@ -3,7 +3,7 @@ import { IdentifierMap } from '../src/IdentifierMap.js';
 import { DevonianModel } from '../src/DevonianModel.js';
 
 export type SlackMessageWithoutId = DevonianModel & {
-  ts?: string,
+  ts: string,
   user?: string,
   channel: string,
   text: string,
