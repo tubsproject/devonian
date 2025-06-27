@@ -44,9 +44,7 @@ export class DevonianTable<
     fieldsToMerge: string[],
   ): Promise<{ position: number; minted: boolean }> {
     const removeNativeForeignId = JSON.parse(JSON.stringify(obj));
-    delete removeNativeForeignId.foreignIds[
-      `devonian-${this.replicaId}`
-    ];
+    delete removeNativeForeignId.foreignIds[`devonian-${this.replicaId}`];
     if (typeof removeNativeForeignId[this.idFieldName] !== 'undefined') {
       removeNativeForeignId.foreignIds[this.platform] =
         removeNativeForeignId[this.idFieldName];

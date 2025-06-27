@@ -27,14 +27,18 @@ const SolidSlackLens = Schema.transformOrFail(
         foreignIds: {},
       });
     },
-  }
-)
+  },
+);
 
-console.log(await Effect.runPromise(Schema.decodeUnknown(SolidSlackLens)({
-  uri: '1',
-  chatUri: '2',
-  text: 'convert me',
-  authorWebId: '3',
-  date: undefined,
-  foreignIds: {},
-})));
+console.log(
+  await Effect.runPromise(
+    Schema.decodeUnknown(SolidSlackLens)({
+      uri: '1',
+      chatUri: '2',
+      text: 'convert me',
+      authorWebId: '3',
+      date: undefined,
+      foreignIds: {},
+    }),
+  ),
+);
