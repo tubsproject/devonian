@@ -5,13 +5,13 @@ import { DevonianModel } from '../src/DevonianModel.js';
 export type SolidMessageWithoutId = DevonianModel & {
   chatUri: string,
   text: string,
-  authorWebId: string,
-  date?: Date,
+  authorWebId: string | undefined,
+  date: Date | undefined,
   foreignIds: IdentifierMap,
 };
 
 export type SolidMessage = SolidMessageWithoutId & {
-  uri: string,
+  uri: string | undefined,
 };
 
 export class SolidMessageClient extends DevonianClient<SolidMessageWithoutId, SolidMessage> {

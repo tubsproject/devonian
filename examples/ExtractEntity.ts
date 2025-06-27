@@ -28,7 +28,7 @@ export type AcmeCustomer =  AcmeCustomerWithoutId & {
 export type AcmeLinkedOrderWithoutId =  DevonianModel & {
   item: string;
   quantity: number;
-  shipDate: Date;
+  shipDate: Date | undefined;
   customerId: number;
 }
 export type AcmeLinkedOrder =  AcmeLinkedOrderWithoutId & {
@@ -77,8 +77,8 @@ export class ExtractEntityBridge {
           item: input.item,
           quantity: input.quantity,
           shipDate: input.shipDate,
-          customerName: customer.name,
-          customerAddress: customer.address,
+          customerName: (customer ? customer.name : ''),
+          customerAddress: (customer ? customer.address : ''),
           foreignIds: this.index.convertForeignIds('linked', input.id.toString(), input.foreignIds, 'comprehensive'),
         };
         return ret;

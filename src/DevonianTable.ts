@@ -98,7 +98,7 @@ export class DevonianTable<
   async getRows(): Promise<ModelWithoutId[]> {
     return this.storage.getRows();
   }
-  async getRow(position: number): Promise<ModelWithoutId> {
+  async getRow(position: number): Promise<ModelWithoutId | undefined> {
     return this.storage.get(position);
   }
 
@@ -122,6 +122,9 @@ export class DevonianTable<
       });
     }
     const obj = await this.storage.get(position);
+    if (!obj) {
+      return;
+    }
     obj.foreignIds[this.platform] = position;
     return obj.foreignIds[this.platform];
   }

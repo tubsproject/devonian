@@ -19,23 +19,23 @@ export class DevonianSolidSlackBridge {
       this.slackMessageTable,
       async (input: SolidMessage): Promise<SlackMessage> => {
         const ret = {
-          ts: this.index.convertId('message', 'solid', input.uri, 'slack') as string,
-          user: this.index.convertId('person', 'solid', input.authorWebId, 'slack') as string,
+          ts: (input.uri ? this.index.convertId('message', 'solid', input.uri, 'slack') as string : undefined),
+          user: (input.authorWebId ? this.index.convertId('person', 'solid', input.authorWebId, 'slack') as string : undefined),
           text: input.text,
           channel: this.index.convertId('channel', 'solid', input.chatUri, 'slack') as string,
-          foreignIds: this.index.convertForeignIds('solid', input.uri, input.foreignIds, 'slack'),
+          foreignIds: (input.uri ? this.index.convertForeignIds('solid', input.uri, input.foreignIds, 'slack') : {}),
         };
         // console.log('converting from Solid to Slack', input, ret);
         return ret;
       },
       async (input: SlackMessage): Promise<SolidMessage> => {
         const ret = {
-          uri: this.index.convertId('message', 'slack', input.ts, 'solid') as string,
+          uri: (input.ts ? this.index.convertId('message', 'slack', input.ts, 'solid') as string : undefined),
           chatUri: this.index.convertId('channel', 'slack', input.channel, 'solid') as string,
           text: input.text,
-          authorWebId: this.index.convertId('person', 'slack', input.user, 'solid') as string,
-          date: new Date(parseFloat(input.ts) * 1000),
-          foreignIds: this.index.convertForeignIds('slack', input.ts, input.foreignIds, 'solid'),
+          authorWebId: (input.user ? this.index.convertId('person', 'slack', input.user, 'solid') as string : undefined),
+          date: (input.ts ? new Date(parseFloat(input.ts) * 1000) : undefined),
+          foreignIds: (input.ts ? this.index.convertForeignIds('slack', input.ts, input.foreignIds, 'solid') : {}),
         };
         // console.log('converting from Slack to Solid', input, ret);
         return ret;

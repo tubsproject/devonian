@@ -16,6 +16,7 @@ describe('DevonianSolidSlackBridge', () => {
       uri: 'https://example.com/chat/2025/05/05/chat.ttl#Msg1',
       chatUri: 'https://example.com/chat/index.ttl',
       authorWebId: 'https://example.com/profile/card#me',
+      date: undefined,
       text: 'solid text',
       foreignIds: {
         'asdf': 'qwer',

@@ -3,15 +3,14 @@ import { IdentifierMap } from '../src/IdentifierMap.js';
 import { DevonianModel } from '../src/DevonianModel.js';
 
 export type SlackMessageWithoutId = DevonianModel & {
-  ts: string,
-  user?: string,
+  user: string | undefined,
   channel: string,
   text: string,
   foreignIds: IdentifierMap,
 };
 
 export type SlackMessage = SlackMessageWithoutId & {
-  ts?: string,
+  ts: string | undefined,
 };
 
 export class SlackMessageClient extends DevonianClient<SlackMessageWithoutId, SlackMessage> {

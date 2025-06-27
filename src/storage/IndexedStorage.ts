@@ -12,7 +12,7 @@ export class IndexedStorage<ModelWithoutId extends DevonianModel>
   implements Storage<ModelWithoutId>
 {
   private storageId: string;
-  private semaphore: Promise<void>;
+  private semaphore?: Promise<void>;
   private coreStorage: CoreStorage<ModelWithoutId>;
   constructor(storageId: string, coreStorage: CoreStorage<ModelWithoutId>) {
     this.storageId = storageId;
@@ -92,7 +92,7 @@ export class IndexedStorage<ModelWithoutId extends DevonianModel>
     // console.log(`findByIdMap fail`);
     return undefined;
   }
-  async get(position: number): Promise<ModelWithoutId> {
+  async get(position: number): Promise<ModelWithoutId | undefined> {
     return this.coreStorage.getRow(position);
   }
   async set(position: number, obj: ModelWithoutId): Promise<void> {
@@ -143,9 +143,7 @@ export class IndexedStorage<ModelWithoutId extends DevonianModel>
     obj: ModelWithoutId,
     fieldsToMerge: string[],
   ): Promise<{ position: number; minted: boolean }> {
-    // console.log('UPSERT', obj);
-    if (typeof this.semaphore !== 'undefined') {
-      // console.log('awaiting semaphore');
+    if (this.semaphore) {
       await this.semaphore;
     }
     const promise = this.doUpsert(obj, fieldsToMerge);
