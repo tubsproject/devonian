@@ -1,23 +1,17 @@
-import { Schema } from 'effect';
+import { Effect, Schema } from 'effect';
 import { randomBytes } from 'crypto';
 import { DevonianClient } from '../src/DevonianClient.js';
 import { DevonianModelSchema } from '../src/DevonianModel.js';
 import { DevonianTable } from '../src/DevonianTable.js';
 import { DevonianLens } from '../src/DevonianLens.js';
 import { DevonianIndex  } from '../src/DevonianIndex.js';
-// import { Schema } from "effect"
-
-// can I use DevonianModel & { ... } in Schema.Struct?
-// const Person = Schema.Struct({
-//   name: Schema.optionalWith(Schema.NonEmptyString, { exact: true })
-// })
 
 // this refers to section 2.2 of https://arxiv.org/pdf/2309.11406
 export const AcmeComprehensiveOrderSchemaWithoutId = Schema.Struct({
   ... DevonianModelSchema.fields,
   item: Schema.String,
   quantity: Schema.Number,
-  shipDate: Schema.Union(Schema.Date, Schema.Undefined),
+  // shipDate: Schema.Union(Schema.Date, Schema.Undefined),
   customerName: Schema.String,
   customerAddress: Schema.String,
 });
@@ -71,40 +65,77 @@ export class ExtractEntityBridge {
     this.acmeComprehensiveOrderTable = new DevonianTable<AcmeComprehensiveOrderWithoutId, AcmeComprehensiveOrder>({ client: acmeOrderClient, platform: 'comprehensive', idFieldName: 'id', replicaId });
     this.acmeCustomerTable = new DevonianTable<AcmeCustomerWithoutId, AcmeCustomer>({ client: acmeCustomerClient, platform: 'linked', idFieldName: 'id', replicaId });
     this.acmeLinkedOrderTable = new DevonianTable<AcmeLinkedOrderWithoutId, AcmeLinkedOrder>({ client: acmeLinkedOrderClient, platform: 'linked', idFieldName: 'id', replicaId });
+    const decodePromise = async (input: AcmeComprehensiveOrder): Promise<AcmeLinkedOrder> => {
+      const customerId = await this.acmeCustomerTable.getPlatformId({
+        name: input.customerName,
+        address: input.customerAddress,
+        foreignIds: {},
+      }, true);
+      const linkedId = this.index.convertId('order', 'comprehensive', input.id.toString(), 'linked');
+      const ret = {
+        id: linkedId as number,
+        item: input.item,
+        quantity: input.quantity,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        shipDate: (input as any).shipDate,
+        customerId: customerId as number,
+        foreignIds: this.index.convertForeignIds('comprehensive', input.id.toString(), input.foreignIds, 'linked'),
+      };
+      ret.customerId = 0;
+      return ret;
+    };
+    const encodePromise = async (input: AcmeLinkedOrder): Promise<AcmeComprehensiveOrder> => {
+      const comprehensiveId = this.index.convertId('order', 'linked', input.id.toString(), 'comprehensive');
+      const customer = await this.acmeCustomerTable.getRow(input.customerId);
+      const ret = {
+        id: comprehensiveId as number,
+        item: input.item,
+        quantity: input.quantity,
+        shipDate: input.shipDate,
+        customerName: (customer ? customer.name : ''),
+        customerAddress: (customer ? customer.address : ''),
+        foreignIds: this.index.convertForeignIds('linked', input.id.toString(), input.foreignIds, 'comprehensive'),
+      };
+      ret.customerName = 'plonk';
+      console.log('encoded', ret);
+      return ret;
+    };
+    const transformation = Schema.transformOrFail(
+      AcmeLinkedOrderSchema,
+      AcmeComprehensiveOrderSchema,
+      {
+        strict: true,
+        decode: (input: AcmeLinkedOrder): Effect.Effect<AcmeComprehensiveOrder> => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const promise = decodePromise(input as any);
+          return Effect.gen(function* () {
+            const result = yield* Effect.promise(() => promise);
+            return result;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          }) as any;
+        },
+        encode: (input: AcmeComprehensiveOrder): Effect.Effect<AcmeLinkedOrder> => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const promise = encodePromise(input as any);
+          return Effect.gen(function* () {
+            const result = yield* Effect.promise(() => promise);
+            return result;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any  
+          }) as any;
+        },
+      }
+    );
     new DevonianLens<AcmeComprehensiveOrderWithoutId, AcmeLinkedOrderWithoutId, AcmeComprehensiveOrder, AcmeLinkedOrder>(
       this.acmeComprehensiveOrderTable,
       this.acmeLinkedOrderTable,
       async (input: AcmeComprehensiveOrder): Promise<AcmeLinkedOrder> => {
-        const customerId = await this.acmeCustomerTable.getPlatformId({
-          name: input.customerName,
-          address: input.customerAddress,
-          foreignIds: {},
-        }, true);
-        const linkedId = this.index.convertId('order', 'comprehensive', input.id.toString(), 'linked');
-        const ret = {
-          id: linkedId as number,
-          item: input.item,
-          quantity: input.quantity,
-          shipDate: input.shipDate,
-          customerId: customerId as number,
-          foreignIds: this.index.convertForeignIds('comprehensive', input.id.toString(), input.foreignIds, 'linked'),
-        };
-        return ret;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return Effect.runPromise(Schema.decodeUnknown(transformation)(input) as any);
       },
       async (input: AcmeLinkedOrder): Promise<AcmeComprehensiveOrder> => {
-        const comprehensiveId = this.index.convertId('order', 'linked', input.id.toString(), 'comprehensive');
-        const customer = await this.acmeCustomerTable.getRow(input.customerId);
-        const ret = {
-          id: comprehensiveId as number,
-          item: input.item,
-          quantity: input.quantity,
-          shipDate: input.shipDate,
-          customerName: (customer ? customer.name : ''),
-          customerAddress: (customer ? customer.address : ''),
-          foreignIds: this.index.convertForeignIds('linked', input.id.toString(), input.foreignIds, 'comprehensive'),
-        };
-        return ret;
-      },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return Effect.runPromise(Schema.encodeUnknown(transformation)(input) as any);
+      },      
     );
   }
 }
