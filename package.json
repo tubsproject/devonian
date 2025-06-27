@@ -53,6 +53,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@automerge/automerge-repo": "^2.0.0",
+    "effect": "^3.16.0",
     "tslib": "~2.8"
   },
   "volta": {
