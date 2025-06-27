@@ -59,8 +59,10 @@ export class DevonianIndex {
     if (typeof i === 'number') {
       this.ids[model][i][platform] = localId;
       Object.keys(foreignIds).forEach((otherPlatform) => {
-        this.ids[model][i][otherPlatform] = foreignIds[otherPlatform];
-        this.index[model]![otherPlatform]![foreignIds[otherPlatform]] = i;
+        if (typeof i === 'number') {
+          this.ids[model][i][otherPlatform] = foreignIds[otherPlatform];
+          this.index[model]![otherPlatform]![foreignIds[otherPlatform]] = i;
+        }
       });
     } else {
       const toStore = JSON.parse(JSON.stringify(foreignIds));

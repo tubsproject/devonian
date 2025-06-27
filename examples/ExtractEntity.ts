@@ -1,43 +1,65 @@
+import { Schema } from 'effect';
 import { randomBytes } from 'crypto';
 import { DevonianClient } from '../src/DevonianClient.js';
-import { DevonianModel } from '../src/DevonianModel.js';
+import { DevonianModelSchema } from '../src/DevonianModel.js';
 import { DevonianTable } from '../src/DevonianTable.js';
 import { DevonianLens } from '../src/DevonianLens.js';
 import { DevonianIndex  } from '../src/DevonianIndex.js';
+// import { Schema } from "effect"
+
+// can I use DevonianModel & { ... } in Schema.Struct?
+// const Person = Schema.Struct({
+//   name: Schema.optionalWith(Schema.NonEmptyString, { exact: true })
+// })
 
 // this refers to section 2.2 of https://arxiv.org/pdf/2309.11406
-export type AcmeComprehensiveOrderWithoutId = DevonianModel & {
-  item: string;
-  quantity: number;
-  shipDate: Date;
-  customerName: string;
-  customerAddress: string;
-}
-export type AcmeComprehensiveOrder =  AcmeComprehensiveOrderWithoutId & {
-  id: number;
+export const AcmeComprehensiveOrderSchemaWithoutId = Schema.Struct({
+  ... DevonianModelSchema.fields,
+  item: Schema.String,
+  quantity: Schema.Number,
+  shipDate: Schema.Union(Schema.Date, Schema.Undefined),
+  customerName: Schema.String,
+  customerAddress: Schema.String,
+});
+export type AcmeComprehensiveOrderWithoutId = typeof AcmeComprehensiveOrderSchemaWithoutId.Type;
 
-}
-export type AcmeCustomerWithoutId =  DevonianModel & {
-  name: string;
-  address: string;
-}
-export type AcmeCustomer =  AcmeCustomerWithoutId & {
-  id: number;
-}
+export const AcmeComprehensiveOrderSchema =  Schema.Struct({
+  ... AcmeComprehensiveOrderSchemaWithoutId.fields,
+  id: Schema.Number,
+});
+export type AcmeComprehensiveOrder = typeof AcmeComprehensiveOrderSchema.Type;
 
-export type AcmeLinkedOrderWithoutId =  DevonianModel & {
-  item: string;
-  quantity: number;
-  shipDate: Date;
-  customerId: number;
-}
-export type AcmeLinkedOrder =  AcmeLinkedOrderWithoutId & {
-  id: number;
-}
+export const AcmeCustomerSchemaWithoutId =  Schema.Struct({
+  ... DevonianModelSchema.fields,
+  name: Schema.String,
+  address: Schema.String,
+});
+export type AcmeCustomerWithoutId = typeof AcmeCustomerSchemaWithoutId.Type;
+
+export const AcmeCustomerSchema =  Schema.Struct({
+  ... AcmeCustomerSchemaWithoutId.fields,
+  id: Schema.Number,
+});
+export type AcmeCustomer = typeof AcmeCustomerSchema.Type;
+
+export const AcmeLinkedOrderSchemaWithoutId = Schema.Struct({
+  ... DevonianModelSchema.fields,
+  item: Schema.String,
+  quantity: Schema.Number,
+  shipDate: Schema.Union(Schema.Date, Schema.Undefined),
+  customerId: Schema.Number,
+});
+export type AcmeLinkedOrderWithoutId = typeof AcmeLinkedOrderSchemaWithoutId.Type;
+
+export const AcmeLinkedOrderSchema = Schema.Struct({
+  ... AcmeLinkedOrderSchemaWithoutId.fields,
+  id: Schema.Number,
+});
+export type AcmeLinkedOrder = typeof AcmeLinkedOrderSchema.Type;
 
 export class ExtractEntityBridge {
   index: DevonianIndex;
-  acmeComprehensiveOrderTable: DevonianTable<AcmeComprehensiveOrderWithoutId, AcmeComprehensiveOrder>;
+  acmeComprehensiveOrderTable: DevonianTable<typeof AcmeComprehensiveOrderSchemaWithoutId.Type, typeof AcmeComprehensiveOrderSchema.Type>;
   acmeCustomerTable: DevonianTable<AcmeCustomerWithoutId, AcmeCustomer>;
   acmeLinkedOrderTable: DevonianTable<AcmeLinkedOrderWithoutId, AcmeLinkedOrder>;
 
@@ -77,8 +99,8 @@ export class ExtractEntityBridge {
           item: input.item,
           quantity: input.quantity,
           shipDate: input.shipDate,
-          customerName: customer.name,
-          customerAddress: customer.address,
+          customerName: (customer ? customer.name : ''),
+          customerAddress: (customer ? customer.address : ''),
           foreignIds: this.index.convertForeignIds('linked', input.id.toString(), input.foreignIds, 'comprehensive'),
         };
         return ret;

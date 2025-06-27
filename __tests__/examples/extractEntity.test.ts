@@ -1,3 +1,4 @@
+import { Console, Effect } from "effect";
 import { MockClient } from '../helpers.js';
 import { describe, it, expect } from 'vitest';
 import { DevonianIndex } from '../../src/DevonianIndex.js';
@@ -12,6 +13,14 @@ describe('ExtractEntity', () => {
   const bridge = new ExtractEntityBridge(index, acmeOrderMockClient, acmeCustomerMockClient, acmeLinkedOrderMockClient, replicaId);
   // console.log('Comprehensive is left, Linked is right');
   it('can replicate creations from comprehensive to linked', async () => {
+    const divide = (a: number, b: number): Effect.Effect<number, Error> => {
+      if (b === 0) {
+        return Effect.fail(new Error("Cannot divide by zero"));
+      }
+      return Effect.succeed(a / b);
+    };
+    const program = Console.log("Hello, World!", divide(3, 4));
+    Effect.runSync(program);
     // console.log('fakeIncoming Anvil');
     acmeOrderMockClient.fakeIncoming({
       id: 0,

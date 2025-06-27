@@ -1,18 +1,22 @@
+import { Schema } from 'effect';
 import { DevonianClient } from '../src/DevonianClient.js';
-import { IdentifierMap } from '../src/IdentifierMap.js';
-import { DevonianModel } from '../src/DevonianModel.js';
+import { IdentifierMapSchema } from '../src/IdentifierMap.js';
+import { DevonianModelSchema } from '../src/DevonianModel.js';
 
-export type SlackMessageWithoutId = DevonianModel & {
-  ts?: string,
-  user?: string,
-  channel: string,
-  text: string,
-  foreignIds: IdentifierMap,
-};
+export const SlackMessageSchemaWithoutId = Schema.Struct({
+  ... DevonianModelSchema.fields,
+  user: Schema.Union(Schema.String, Schema.Undefined),
+  channel: Schema.Union(Schema.String, Schema.Undefined),
+  text: Schema.String,
+  foreignIds: IdentifierMapSchema,
+});
+export type SlackMessageWithoutId = typeof SlackMessageSchemaWithoutId.Type;
 
-export type SlackMessage = SlackMessageWithoutId & {
-  ts?: string,
-};
+export const SlackMessageSchema = Schema.Struct({
+  ... SlackMessageSchemaWithoutId.fields,
+  ts: Schema.Union(Schema.String, Schema.Undefined),
+});
+export type SlackMessage = typeof SlackMessageSchema.Type;
 
 export class SlackMessageClient extends DevonianClient<SlackMessageWithoutId, SlackMessage> {
   async add(obj: SlackMessageWithoutId): Promise<SlackMessage> {

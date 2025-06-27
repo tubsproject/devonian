@@ -2,7 +2,7 @@ import { DevonianModel } from '../DevonianModel.js';
 
 export interface Storage<ModelWithoutId extends DevonianModel> {
   findObject(obj: ModelWithoutId): Promise<number | undefined>;
-  get(position: number): Promise<ModelWithoutId>;
+  get(position: number): Promise<ModelWithoutId | undefined>;
   set(position: number, obj: ModelWithoutId): Promise<void>;
   ensureRow(
     obj: ModelWithoutId,

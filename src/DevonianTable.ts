@@ -44,9 +44,7 @@ export class DevonianTable<
     fieldsToMerge: string[],
   ): Promise<{ position: number; minted: boolean }> {
     const removeNativeForeignId = JSON.parse(JSON.stringify(obj));
-    delete (removeNativeForeignId as ModelWithoutId).foreignIds[
-      `devonian-${this.replicaId}`
-    ];
+    delete removeNativeForeignId.foreignIds[`devonian-${this.replicaId}`];
     if (typeof removeNativeForeignId[this.idFieldName] !== 'undefined') {
       removeNativeForeignId.foreignIds[this.platform] =
         removeNativeForeignId[this.idFieldName];
@@ -98,7 +96,7 @@ export class DevonianTable<
   async getRows(): Promise<ModelWithoutId[]> {
     return this.storage.getRows();
   }
-  async getRow(position: number): Promise<ModelWithoutId> {
+  async getRow(position: number): Promise<ModelWithoutId | undefined> {
     return this.storage.get(position);
   }
 
@@ -122,6 +120,9 @@ export class DevonianTable<
       });
     }
     const obj = await this.storage.get(position);
+    if (!obj) {
+      return;
+    }
     obj.foreignIds[this.platform] = position;
     return obj.foreignIds[this.platform];
   }
