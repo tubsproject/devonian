@@ -21,33 +21,45 @@ export const AcmeComprehensiveOrderSchemaWithoutId = Schema.Struct({
   customerName: Schema.String,
   customerAddress: Schema.String,
 });
+export type AcmeComprehensiveOrderWithoutId = typeof AcmeComprehensiveOrderSchemaWithoutId.Type;
 
-export const AcmeComprehensiveOrderSchema =  Schema.Struct{
+export const AcmeComprehensiveOrderSchema =  Schema.Struct({
   ... AcmeComprehensiveOrderSchemaWithoutId.fields,
   id: Schema.Number,
 });
+export type AcmeComprehensiveOrder = typeof AcmeComprehensiveOrderSchema.Type;
 
-export type AcmeCustomerWithoutId =  DevonianModel & {
-  name: string;
-  address: string;
-}
-export type AcmeCustomer =  AcmeCustomerWithoutId & {
-  id: number;
-}
+export const AcmeCustomerSchemaWithoutId =  Schema.Struct({
+  ... DevonianModelSchema.fields,
+  name: Schema.String,
+  address: Schema.String,
+});
+export type AcmeCustomerWithoutId = typeof AcmeCustomerSchemaWithoutId.Type;
 
-export type AcmeLinkedOrderWithoutId =  DevonianModel & {
-  item: string;
-  quantity: number;
-  shipDate: Date | undefined;
-  customerId: number;
-}
-export type AcmeLinkedOrder =  AcmeLinkedOrderWithoutId & {
-  id: number;
-}
+export const AcmeCustomerSchema =  Schema.Struct({
+  ... AcmeCustomerSchemaWithoutId.fields,
+  id: Schema.Number,
+});
+export type AcmeCustomer = typeof AcmeCustomerSchema.Type;
+
+export const AcmeLinkedOrderSchemaWithoutId = Schema.Struct({
+  ... DevonianModelSchema.fields,
+  item: Schema.String,
+  quantity: Schema.Number,
+  shipDate: Schema.Union(Schema.Date, Schema.Undefined),
+  customerId: Schema.Number,
+});
+export type AcmeLinkedOrderWithoutId = typeof AcmeLinkedOrderSchemaWithoutId.Type;
+
+export const AcmeLinkedOrderSchema = Schema.Struct({
+  ... AcmeLinkedOrderSchemaWithoutId.fields,
+  id: Schema.Number,
+});
+export type AcmeLinkedOrder = typeof AcmeLinkedOrderSchema.Type;
 
 export class ExtractEntityBridge {
   index: DevonianIndex;
-  acmeComprehensiveOrderTable: DevonianTable<AcmeComprehensiveOrderWithoutId, AcmeComprehensiveOrder>;
+  acmeComprehensiveOrderTable: DevonianTable<typeof AcmeComprehensiveOrderSchemaWithoutId.Type, typeof AcmeComprehensiveOrderSchema.Type>;
   acmeCustomerTable: DevonianTable<AcmeCustomerWithoutId, AcmeCustomer>;
   acmeLinkedOrderTable: DevonianTable<AcmeLinkedOrderWithoutId, AcmeLinkedOrder>;
 

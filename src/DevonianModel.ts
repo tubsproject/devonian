@@ -5,4 +5,4 @@ export const DevonianModelSchema = Schema.Struct({
   foreignIds: IdentifierMapSchema,
 });
 
-export type DevonianModel = Schema.Schema<typeof DevonianModelSchema>
+export type DevonianModel = typeof DevonianModelSchema.Type
