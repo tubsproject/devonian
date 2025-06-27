@@ -8,7 +8,7 @@ export const SolidMessageSchemaWithoutId = Schema.Struct({
   chatUri: Schema.Union(Schema.String, Schema.Undefined),
   text: Schema.String,
   authorWebId: Schema.Union(Schema.String, Schema.Undefined),
-  date: Schema.Union(Schema.Date, Schema.Undefined), // why does uncommenting this give a build error?
+  date: Schema.Union(Schema.Date, Schema.Undefined),
   foreignIds: IdentifierMapSchema,
 });
 export type SolidMessageWithoutId = typeof SolidMessageSchemaWithoutId.Type;
