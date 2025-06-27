@@ -1,22 +1,32 @@
+import { Schema } from 'effect';
 import { randomBytes } from 'crypto';
 import { DevonianClient } from '../src/DevonianClient.js';
-import { DevonianModel } from '../src/DevonianModel.js';
+import { DevonianModelSchema } from '../src/DevonianModel.js';
 import { DevonianTable } from '../src/DevonianTable.js';
 import { DevonianLens } from '../src/DevonianLens.js';
 import { DevonianIndex  } from '../src/DevonianIndex.js';
+// import { Schema } from "effect"
+
+// can I use DevonianModel & { ... } in Schema.Struct?
+// const Person = Schema.Struct({
+//   name: Schema.optionalWith(Schema.NonEmptyString, { exact: true })
+// })
 
 // this refers to section 2.2 of https://arxiv.org/pdf/2309.11406
-export type AcmeComprehensiveOrderWithoutId = DevonianModel & {
-  item: string;
-  quantity: number;
-  shipDate: Date | undefined;
-  customerName: string;
-  customerAddress: string;
-}
-export type AcmeComprehensiveOrder =  AcmeComprehensiveOrderWithoutId & {
-  id: number;
+export const AcmeComprehensiveOrderSchemaWithoutId = Schema.Struct({
+  ... DevonianModelSchema.fields,
+  item: Schema.String,
+  quantity: Schema.Number,
+  shipDate: Schema.Union(Schema.Date, Schema.Undefined),
+  customerName: Schema.String,
+  customerAddress: Schema.String,
+});
 
-}
+export const AcmeComprehensiveOrderSchema =  Schema.Struct{
+  ... AcmeComprehensiveOrderSchemaWithoutId.fields,
+  id: Schema.Number,
+});
+
 export type AcmeCustomerWithoutId =  DevonianModel & {
   name: string;
   address: string;
