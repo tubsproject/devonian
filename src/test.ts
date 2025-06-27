@@ -42,3 +42,21 @@ console.log(
     }),
   ),
 );
+
+
+async function wait(): Promise<number> {
+  return new Promise(resolve => setTimeout(() => {
+    resolve(42);
+  }, 10));
+}
+
+
+function promiseToEffect(promise: Promise<number>): Effect.Effect<number> {
+  return Effect.gen(function* () {
+    const result = yield* Effect.promise(() => promise);
+    return result;
+  });
+}
+
+const promise = wait();
+console.log(await Effect.runPromise(promiseToEffect(promise)));
