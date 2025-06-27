@@ -81,6 +81,7 @@ export class ExtractEntityBridge {
         customerId: customerId as number,
         foreignIds: this.index.convertForeignIds('comprehensive', input.id.toString(), input.foreignIds, 'linked'),
       };
+      ret.customerId = 0;
       return ret;
     };
     const encodePromise = async (input: AcmeLinkedOrder): Promise<AcmeComprehensiveOrder> => {
@@ -95,6 +96,7 @@ export class ExtractEntityBridge {
         customerAddress: (customer ? customer.address : ''),
         foreignIds: this.index.convertForeignIds('linked', input.id.toString(), input.foreignIds, 'comprehensive'),
       };
+      ret.customerName = 'plonk';
       console.log('encoded', ret);
       return ret;
     };
