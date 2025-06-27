@@ -24,9 +24,7 @@ describe('DevonianSolidSlackBridge', () => {
     });
     await new Promise(resolve => setTimeout(resolve, 100));
     expect(slackMockClient.added).toEqual([{
-      channel: undefined,
       text: 'solid text',
-      user: undefined,
       foreignIds: {
         asdf: 'qwer',
         'devonian-test-replica': 0,

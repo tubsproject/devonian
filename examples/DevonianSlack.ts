@@ -6,7 +6,7 @@ import { DevonianModelSchema } from '../src/DevonianModel.js';
 export const SlackMessageSchemaWithoutId = Schema.Struct({
   ... DevonianModelSchema.fields,
   user: Schema.Union(Schema.String, Schema.Undefined),
-  channel: Schema.String,
+  channel: Schema.Union(Schema.String, Schema.Undefined),
   text: Schema.String,
   foreignIds: IdentifierMapSchema,
 });
