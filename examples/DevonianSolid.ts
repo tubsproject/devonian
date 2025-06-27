@@ -1,18 +1,23 @@
+import { Schema } from 'effect';
 import { DevonianClient } from '../src/DevonianClient.js';
-import { IdentifierMap } from '../src/IdentifierMap.js';
-import { DevonianModel } from '../src/DevonianModel.js';
+import { IdentifierMapSchema } from '../src/IdentifierMap.js';
+import { DevonianModelSchema } from '../src/DevonianModel.js';
 
-export type SolidMessageWithoutId = DevonianModel & {
-  chatUri: string,
-  text: string,
-  authorWebId: string | undefined,
-  date: Date | undefined,
-  foreignIds: IdentifierMap,
-};
+export const SolidMessageSchemaWithoutId = Schema.Struct({
+  ... DevonianModelSchema.fields,
+  chatUri: Schema.String,
+  text: Schema.String,
+  authorWebId: Schema.Union(Schema.String, Schema.Undefined),
+  date: Schema.Union(Schema.Date, Schema.Undefined),
+  foreignIds: IdentifierMapSchema,
+});
+export type SolidMessageWithoutId = typeof SolidMessageSchemaWithoutId.Type;
 
-export type SolidMessage = SolidMessageWithoutId & {
-  uri: string | undefined,
-};
+export const SolidMessageSchema = Schema.Struct({
+  ... SolidMessageSchemaWithoutId.fields,
+  uri: Schema.Union(Schema.String, Schema.Undefined),
+});
+export type SolidMessage = typeof SolidMessageSchema.Type;
 
 export class SolidMessageClient extends DevonianClient<SolidMessageWithoutId, SolidMessage> {
   async add(obj: SolidMessageWithoutId): Promise<SolidMessage> {
